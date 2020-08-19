@@ -1,4 +1,4 @@
-<img src="logo.png" width="40%">  
+<img src="logo.jpg" width="40%">  
 
 
 # LGCA FHP
