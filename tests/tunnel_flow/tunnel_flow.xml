@@ -1,0 +1,64 @@
+<lgca>
+  <general>
+    <x>     4096  </x>
+    <y>     1792  </y>
+    <p>     0.35  </p>
+    <tend>  15000 </tend>
+    <cells> 7     </cells>
+    <fhp>   2     </fhp>
+  </general>
+
+  <measure>
+    <time> 250 </time>
+    <type> all </type>
+  </measure>
+
+  <obstacles>
+    <solid>
+      <x0> 512  </x0>
+      <x1> 576  </x1>
+      <y0> 704  </y0>
+      <y1> 1088 </y1>
+    </solid>
+
+  </obstacles>
+
+  <staticBoundaries>
+    <dirichlet>
+      <x0>        0     </x0>
+      <x1>        0     </x1>
+      <y0>        0     </y0>
+      <y1>        1791  </y1>
+      <cell>      2     </cell>
+      <value>     1     </value>
+      <direction> right </direction>
+    </dirichlet>
+
+    <dirichlet>
+      <x0>        4095  </x0>
+      <x1>        4095  </x1>
+      <y0>        0     </y0>
+      <y1>        1791  </y1>
+      <cell>      2     </cell>
+      <value>     1     </value>
+      <direction> left </direction>
+    </dirichlet>
+  </staticBoundaries>
+
+  <dynamicBoundaries>
+    <bounceback>
+      <x0> 1    </x0>
+      <x1> 4094 </x1>
+      <y0> 0    </y0>
+      <y1> 0    </y1>
+    </bounceback>
+
+    <bounceback>
+      <x0> 1    </x0>
+      <x1> 4094 </x1>
+      <y0> 1791 </y0>
+      <y1> 1791 </y1>
+    </bounceback>
+  </dynamicBoundaries>
+
+</lgca>

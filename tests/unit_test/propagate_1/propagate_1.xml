@@ -1,0 +1,36 @@
+<lgca>
+  <general>
+    <x>     2048 </x>
+    <y>     2048 </y>
+    <p>     0    </p>
+    <tend>  2400 </tend>
+    <cells> 6     </cells>
+    <fhp>   1     </fhp>
+  </general>
+
+  <measure>
+    <time> 200 </time>
+    <type> all </type>
+  </measure>
+
+  <obstacles>
+  </obstacles>
+
+  <staticBoundaries>
+    <dirichlet>
+      <x0>        0     </x0>
+      <x1>        2047     </x1>
+      <y0>        2047     </y0>
+      <y1>        2047  </y1>
+      <cell>      1     </cell>
+      <value>     1     </value>
+      <direction> top </direction>
+    </dirichlet>
+
+  </staticBoundaries>
+
+  <dynamicBoundaries>
+
+  </dynamicBoundaries>
+
+</lgca>
