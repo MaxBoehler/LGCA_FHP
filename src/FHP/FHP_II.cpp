@@ -72,7 +72,7 @@ void FHP_II::collision() {
         field.putValue(field.resultVector, x, y, 3, c3 ^ ((twoB0|threeB|(rnd&twoB1)|(nrnd&twoB2)|twoB_r3|twoB_r2|twoB_r4|rc3|rc2|rc4)&nsbit));
         field.putValue(field.resultVector, x, y, 4, c4 ^ ((twoB1|threeB|(rnd&twoB2)|(nrnd&twoB0)|twoB_r4|twoB_r3|twoB_r5|rc4|rc3|rc5)&nsbit));
         field.putValue(field.resultVector, x, y, 5, c5 ^ ((twoB2|threeB|(rnd&twoB0)|(nrnd&twoB1)|twoB_r5|twoB_r0|twoB_r4|rc5|rc0|rc4)&nsbit));
-        field.putValue(field.resultVector, x, y, 5, r  ^ (twoB_r0|twoB_r1|twoB_r2|twoB_r3|twoB_r4|twoB_r5|rc0|rc1|rc2|rc3|rc4|rc5));
+        field.putValue(field.resultVector, x, y, 6, r  ^ (twoB_r0|twoB_r1|twoB_r2|twoB_r3|twoB_r4|twoB_r5|rc0|rc1|rc2|rc3|rc4|rc5));
       }
     }
   }
