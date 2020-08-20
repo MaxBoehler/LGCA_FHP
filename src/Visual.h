@@ -22,9 +22,9 @@ private:
 
 public:
   Visual(Field& FIELD, std::string FILENAME, tinyxml2::XMLDocument* DOC);
-  const void visualise(int currentTime);
-  const void visualiseMass(std::string dt);
-  const void visualiseVel(std::string dt);
+  const void visualise(int currentTime, int xRank, int yRank);
+  const void visualiseMass(std::string dt, std::string xr, std::string yr);
+  const void visualiseVel(std::string dt, std::string xr, std::string yr);
 
 };
 

@@ -27,31 +27,33 @@ Visual::Visual(Field& FIELD,
 
 }
 
-const void Visual::visualise(int currentTime) {
+const void Visual::visualise(int currentTime, int xRank, int yRank) {
   if (currentTime % mdt == 0 ) {
     field.measureField();
-    std::ostringstream ct;
+    std::ostringstream ct, xr, yr;
 
     ct << std::setw(6) << std::setfill('0') << currentTime;
+    xr << std::setw(3) << std::setfill('0') << xRank;
+    yr << std::setw(3) << std::setfill('0') << yRank;
 
     switch (type) {
       case VisualType::MASS:
-        visualiseMass(ct.str());
+        visualiseMass(ct.str(), xr.str(), yr.str());
         break;
       case VisualType::VELOCITY:
-        visualiseVel(ct.str());
+        visualiseVel(ct.str(), xr.str(), yr.str());
         break;
       case VisualType::ALL:
-        visualiseMass(ct.str());
-        visualiseVel(ct.str());
+        visualiseMass(ct.str(), xr.str(), yr.str());
+        visualiseVel(ct.str(), xr.str(), yr.str());
         break;
     }
   }
 }
 
-const void Visual::visualiseMass(std::string dt) {
+const void Visual::visualiseMass(std::string dt, std::string xr, std::string yr) {
   std::ofstream outFile;
-  outFile.open(filename + "_mass_t_" + dt + ".csv");
+  outFile.open(filename + "_mass_t_" + dt + "_xr_" + xr + "_yr_" + yr + ".csv");
 
   for (int y = 0; y < field.getYsize()/64; y++) {
     for (int x = 0; x < field.getXsize(); x++) {
@@ -67,9 +69,9 @@ const void Visual::visualiseMass(std::string dt) {
   outFile.close();
 }
 
-const void Visual::visualiseVel(std::string dt) {
+const void Visual::visualiseVel(std::string dt, std::string xr, std::string yr) {
   std::ofstream outFile;
-  outFile.open(filename + "_velocity_t_" + dt + ".csv");
+  outFile.open(filename + "_velocity_t_" + dt + "_xr_" + xr + "_yr_" + yr + ".csv");
   outFile << field.getXsize() << '\n';
   outFile << field.getYsize() << '\n';
 

@@ -13,6 +13,8 @@ private:
   const int xSize;
   const int ySize;
   const int cellSize;
+  const int xRank;
+  const int yRank;
   const double p;
 
   std::vector<int> solidX0;
@@ -45,6 +47,8 @@ private:
 public:
   Field( int X,
          int Y,
+         int XRANK,
+         int YRANK,
          int CELLS,
          double P,
          tinyxml2::XMLDocument* doc);

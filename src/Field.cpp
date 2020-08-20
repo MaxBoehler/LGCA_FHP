@@ -5,12 +5,16 @@
 
 Field::Field( int X,
               int Y,
+              int XRANK,
+              int YRANK,
               int CELLS,
               double P,
               tinyxml2::XMLDocument* DOC) :
 
   xSize       {X/64},
   ySize       {Y},
+  xRank       {XRANK},
+  yRank       {YRANK},
   cellSize    {CELLS},
   p           {P},
 
@@ -28,15 +32,70 @@ Field::Field( int X,
 
   doc{DOC} {
 
+  int sx0, sx1, sy0, sy1;
+  int sx0temp, sx1temp, sy0temp, sy1temp;
+  int xNodes{xSize * 64};
+  int yNodes{ySize};
+  bool xEntry, yEntry;
+
   tinyxml2::XMLElement* root = doc->FirstChildElement( "lgca" );
   for(tinyxml2::XMLElement* obst = root->FirstChildElement("obstacles")->FirstChildElement( "solid" ); obst != NULL; obst = obst->NextSiblingElement("solid")) {
-    solidX0.push_back(std::stoi(obst->FirstChildElement( "x0" )->FirstChild()->ToText()->Value()));
-    solidX1.push_back(std::stoi(obst->FirstChildElement( "x1" )->FirstChild()->ToText()->Value()));
-    solidY0.push_back(std::stoi(obst->FirstChildElement( "y0" )->FirstChild()->ToText()->Value()));
-    solidY1.push_back(std::stoi(obst->FirstChildElement( "y1" )->FirstChild()->ToText()->Value()));
+
+    xEntry = false;
+    yEntry = false;
+
+    sx0 = std::stoi(obst->FirstChildElement( "x0" )->FirstChild()->ToText()->Value());
+    sx1 = std::stoi(obst->FirstChildElement( "x1" )->FirstChild()->ToText()->Value());
+    sy0 = std::stoi(obst->FirstChildElement( "y0" )->FirstChild()->ToText()->Value());
+    sy1 = std::stoi(obst->FirstChildElement( "y1" )->FirstChild()->ToText()->Value());
+
+    if (sx0 - xNodes*xRank >= 0 && sx0 - xNodes*xRank <= xNodes) {
+      sx0temp = sx0 - xNodes*xRank;
+      xEntry = true;
+    } else if (sx0 - xNodes*xRank <= 0 && sx1 - xNodes*xRank >= 0 && sx1 - xNodes*xRank <= xNodes) {
+      sx0temp = 0;
+      xEntry = true;
+    } else if (sx0 - xNodes*xRank < 0 && sx1 - xNodes*xRank > xNodes) {
+      sx0temp = 0;
+      xEntry = true;
+    }
+
+    if (sx1 - xNodes*xRank >= 0 && sx1 - xNodes*xRank <= xNodes) {
+      sx1temp = sx1 - xNodes*xRank;
+    } else if (sx1 - xNodes*xRank >= xNodes && sx0 - xNodes*xRank >= 0 && sx0 - xNodes*xRank <= xNodes ) {
+      sx1temp = xNodes;
+    } else if (sx0 - xNodes*xRank < 0 && sx1 - xNodes*xRank > xNodes) {
+      sx1temp = xNodes;
+    }
+
+
+    if (sy0 - yNodes*yRank >= 0 && sy0 - yNodes*yRank <= yNodes) {
+      sy0temp = sy0 - yNodes*yRank;
+      yEntry = true;
+    } else if (sy0 - yNodes*yRank <= 0 && sy1 - yNodes*yRank >= 0 && sy1 - yNodes*yRank <= yNodes) {
+      sy0temp = 0;
+      yEntry = true;
+    } else if (sy0 - yNodes*yRank < 0 && sy1 - yNodes*yRank > yNodes) {
+      sy0temp = 0;
+      yEntry = true;
+    }
+
+    if (sy1 - yNodes*yRank >= 0 && sy1 - yNodes*yRank <= yNodes) {
+      sy1temp = sy1 - yNodes*yRank;
+    } else if (sy1 - yNodes*yRank >= yNodes && sy0 - yNodes*yRank >= 0 && sy0 - yNodes*yRank <= yNodes ) {
+      sy1temp = yNodes;
+    } else if (sy0 - yNodes*yRank < 0 && sy1 - yNodes*yRank > yNodes) {
+      sy1temp = yNodes;
+    }
+
+    if ( xEntry && yEntry) {
+      solidX0.push_back(sx0temp);
+      solidX1.push_back(sx1temp);
+      solidY0.push_back(sy0temp);
+      solidY1.push_back(sy1temp);
+    }
   }
   initializeField();
-
 }
 
 // get value at position x,y of given vector.

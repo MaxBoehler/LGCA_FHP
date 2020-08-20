@@ -1,5 +1,5 @@
-CXX      := g++
-CXXFLAGS := -std=c++2a -O3
+CXX      := mpic++
+CXXFLAGS := -std=c++2a
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 BIN_DIR  := $(BUILD)/bin
@@ -9,6 +9,7 @@ SRC      += $(wildcard src/*.cpp)
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
+all: CXXFLAGS += -O3
 all: build $(BIN_DIR)/$(TARGET)
 
 $(OBJ_DIR)/%.o: %.cpp
@@ -27,7 +28,7 @@ build:
 
 debug: CXXFLAGS += -DDEBUG -g -O0
 debug: TARGET = latticeGas_FHP_debug
-debug: all
+debug: build $(BIN_DIR)/$(TARGET)
 
 
 clean:

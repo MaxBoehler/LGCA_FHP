@@ -1,11 +1,13 @@
 <lgca>
   <general>
-    <x>     4096  </x>
+    <x>     8192  </x>
     <y>     1792  </y>
-    <p>     0.35  </p>
-    <tend>  15000 </tend>
+    <p>     0     </p>
+    <tend>  2000 </tend>
     <cells> 7     </cells>
     <fhp>   2     </fhp>
+    <xMesh> 2     </xMesh>
+    <yMesh> 1     </yMesh>
   </general>
 
   <measure>
@@ -32,16 +34,6 @@
       <cell>      2     </cell>
       <value>     1     </value>
       <direction> right </direction>
-    </dirichlet>
-
-    <dirichlet>
-      <x0>        4095  </x0>
-      <x1>        4095  </x1>
-      <y0>        0     </y0>
-      <y1>        1791  </y1>
-      <cell>      2     </cell>
-      <value>     1     </value>
-      <direction> left </direction>
     </dirichlet>
   </staticBoundaries>
 
