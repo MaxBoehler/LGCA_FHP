@@ -100,6 +100,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   Visual visual(field, filename, &doc);
+  if (cart_rank == 0) visual.visualInfo(MPIX, MPIY, tend);
 
 
   auto t1 = std::chrono::high_resolution_clock::now();
