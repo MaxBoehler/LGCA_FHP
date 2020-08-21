@@ -42,6 +42,8 @@ private:
   void   initializeField();
   int    getBit(uint64_t node, int pos);
   double getNeighbours(int x, int y, int cell, int bitCounter);
+  bool   translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1temp,
+                         int x0, int x1, int y0, int y1, int xNodes, int yNodes);
 
 
 public:
@@ -75,6 +77,8 @@ public:
   const inline auto getXsize() { return xSize;    };
   const inline auto getYsize() { return ySize;    };
   const inline auto getCells() { return cellSize; };
+  const inline auto getXRank() { return xRank;    };
+  const inline auto getYRank() { return yRank;    };
 
   // setter
   void putValue(std::vector<uint64_t>& vec, int x, int y, int cell, uint64_t value);

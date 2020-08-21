@@ -36,59 +36,22 @@ Field::Field( int X,
   int sx0temp, sx1temp, sy0temp, sy1temp;
   int xNodes{xSize * 64};
   int yNodes{ySize};
-  bool xEntry, yEntry;
+  bool checkSolid;
+
 
   tinyxml2::XMLElement* root = doc->FirstChildElement( "lgca" );
   for(tinyxml2::XMLElement* obst = root->FirstChildElement("obstacles")->FirstChildElement( "solid" ); obst != NULL; obst = obst->NextSiblingElement("solid")) {
 
-    xEntry = false;
-    yEntry = false;
 
     sx0 = std::stoi(obst->FirstChildElement( "x0" )->FirstChild()->ToText()->Value());
     sx1 = std::stoi(obst->FirstChildElement( "x1" )->FirstChild()->ToText()->Value());
     sy0 = std::stoi(obst->FirstChildElement( "y0" )->FirstChild()->ToText()->Value());
     sy1 = std::stoi(obst->FirstChildElement( "y1" )->FirstChild()->ToText()->Value());
 
-    if (sx0 - xNodes*xRank >= 0 && sx0 - xNodes*xRank <= xNodes) {
-      sx0temp = sx0 - xNodes*xRank;
-      xEntry = true;
-    } else if (sx0 - xNodes*xRank <= 0 && sx1 - xNodes*xRank >= 0 && sx1 - xNodes*xRank <= xNodes) {
-      sx0temp = 0;
-      xEntry = true;
-    } else if (sx0 - xNodes*xRank < 0 && sx1 - xNodes*xRank > xNodes) {
-      sx0temp = 0;
-      xEntry = true;
-    }
+    checkSolid = translateCoords(sx0temp, sx1temp, sy0temp, sy1temp,
+                                 sx0, sx1, sy0, sy1, xNodes, yNodes);
 
-    if (sx1 - xNodes*xRank >= 0 && sx1 - xNodes*xRank <= xNodes) {
-      sx1temp = sx1 - xNodes*xRank;
-    } else if (sx1 - xNodes*xRank >= xNodes && sx0 - xNodes*xRank >= 0 && sx0 - xNodes*xRank <= xNodes ) {
-      sx1temp = xNodes;
-    } else if (sx0 - xNodes*xRank < 0 && sx1 - xNodes*xRank > xNodes) {
-      sx1temp = xNodes;
-    }
-
-
-    if (sy0 - yNodes*yRank >= 0 && sy0 - yNodes*yRank <= yNodes) {
-      sy0temp = sy0 - yNodes*yRank;
-      yEntry = true;
-    } else if (sy0 - yNodes*yRank <= 0 && sy1 - yNodes*yRank >= 0 && sy1 - yNodes*yRank <= yNodes) {
-      sy0temp = 0;
-      yEntry = true;
-    } else if (sy0 - yNodes*yRank < 0 && sy1 - yNodes*yRank > yNodes) {
-      sy0temp = 0;
-      yEntry = true;
-    }
-
-    if (sy1 - yNodes*yRank >= 0 && sy1 - yNodes*yRank <= yNodes) {
-      sy1temp = sy1 - yNodes*yRank;
-    } else if (sy1 - yNodes*yRank >= yNodes && sy0 - yNodes*yRank >= 0 && sy0 - yNodes*yRank <= yNodes ) {
-      sy1temp = yNodes;
-    } else if (sy0 - yNodes*yRank < 0 && sy1 - yNodes*yRank > yNodes) {
-      sy1temp = yNodes;
-    }
-
-    if ( xEntry && yEntry) {
+    if ( checkSolid) {
       solidX0.push_back(sx0temp);
       solidX1.push_back(sx1temp);
       solidY0.push_back(sy0temp);
@@ -96,6 +59,57 @@ Field::Field( int X,
     }
   }
   initializeField();
+}
+
+bool Field::translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1temp,
+                            int x0, int x1, int y0, int y1, int xNodes, int yNodes) {
+
+  bool xEntry{false}, yEntry {false};
+
+  if (x0 - xNodes*xRank >= 0 && x0 - xNodes*xRank <= xNodes) {
+    x0temp = x0 - xNodes*xRank;
+    xEntry = true;
+  } else if (x0 - xNodes*xRank <= 0 && x1 - xNodes*xRank >= 0 && x1 - xNodes*xRank <= xNodes) {
+    x0temp = 0;
+    xEntry = true;
+  } else if (x0 - xNodes*xRank < 0 && x1 - xNodes*xRank > xNodes) {
+    x0temp = 0;
+    xEntry = true;
+  }
+
+  if (x1 - xNodes*xRank >= 0 && x1 - xNodes*xRank <= xNodes) {
+    x1temp = x1 - xNodes*xRank;
+  } else if (x1 - xNodes*xRank >= xNodes && x0 - xNodes*xRank >= 0 && x0 - xNodes*xRank <= xNodes ) {
+    x1temp = xNodes;
+  } else if (x0 - xNodes*xRank < 0 && x1 - xNodes*xRank > xNodes) {
+    x1temp = xNodes;
+  }
+
+
+  if (y0 - yNodes*yRank >= 0 && y0 - yNodes*yRank <= yNodes) {
+    y0temp = y0 - yNodes*yRank;
+    yEntry = true;
+  } else if (y0 - yNodes*yRank <= 0 && y1 - yNodes*yRank >= 0 && y1 - yNodes*yRank <= yNodes) {
+    y0temp = 0;
+    yEntry = true;
+  } else if (y0 - yNodes*yRank < 0 && y1 - yNodes*yRank > yNodes) {
+    y0temp = 0;
+    yEntry = true;
+  }
+
+  if (y1 - yNodes*yRank >= 0 && y1 - yNodes*yRank <= yNodes) {
+    y1temp = y1 - yNodes*yRank;
+  } else if (y1 - yNodes*yRank >= yNodes && y0 - yNodes*yRank >= 0 && y0 - yNodes*yRank <= yNodes ) {
+    y1temp = yNodes;
+  } else if (y0 - yNodes*yRank < 0 && y1 - yNodes*yRank > yNodes) {
+    y1temp = yNodes;
+  }
+
+  if (xEntry && yEntry) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // get value at position x,y of given vector.
