@@ -143,25 +143,20 @@ def visualiseVelocity(path, video):
     yDim = info[5]*info[1]/64
     xDim = info[4]*info[0]
 
-    X = []
-    Y = []
-    for y in range(int(yDim)):
-        for x in range(int(xDim)):
-            X.append(x)
-            Y.append(y)
-
+    X, Y = np.meshgrid(np.arange(0, int(xDim)), np.arange(0, int(yDim)))
 
     ratio = (yDim) / xDim
 
     for time in range(0, info[2] + info[3], info[3]):
-        dataVEL = concatenateData("velocity", info, filename, time)
+        dataVELX = concatenateData("velocityX", info, filename, time)
+        dataVELY = concatenateData("velocityY", info, filename, time)
 
-        meanX = np.mean(dataVEL[0])
-        meanY = np.mean(dataVEL[1])
+        meanX = np.mean(dataVELX)
+        meanY = np.mean(dataVELY)
 
         plt.figure(figsize=(8, 8 * ratio))
         plt.title("Timestep: {}".format(time))
-        plt.quiver(X,Y,dataVEL[0],-dataVEL[1], scale=1, units='xy')
+        plt.quiver(X,Y,dataVELX,-dataVELY, scale=1, units='xy')
         plt.gca().invert_yaxis()
         plt.savefig(filename + "_velocity_" + str(time) + ".png", dpi=300, bbox_inches="tight")
         plt.close()

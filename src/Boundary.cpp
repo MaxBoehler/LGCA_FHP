@@ -47,6 +47,7 @@ Boundary::Boundary(Field& FIELD) : field{FIELD} {
                                     bx0, bx1, by0, by1, xNodes, yNodes);
 
     if ( checkBoundary) {
+
       bouncebackX0.push_back(bx0temp);
       bouncebackX1.push_back(bx1temp);
       bouncebackY0.push_back(by0temp);

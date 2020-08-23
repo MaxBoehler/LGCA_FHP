@@ -46,6 +46,7 @@ private:
                          int x0, int x1, int y0, int y1, int xNodes, int yNodes);
 
 
+
 public:
   Field( int X,
          int Y,
@@ -71,6 +72,7 @@ public:
   tinyxml2::XMLDocument* doc;
 
   void measureField();
+  void moveToBoundary();
 
   // getter
   const uint64_t    getValue(std::vector<uint64_t>& vec, int x, int y, int cell);

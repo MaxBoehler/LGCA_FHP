@@ -109,6 +109,7 @@ int main(int argc, char *argv[]) {
 
   // mainloop: measure und visualize current field -> do collision -> propagate
   for (int t = 0; t <= tend; t++) {
+    field.moveToBoundary();
     visual.visualise(t, col_rank, row_rank);
     fhp->collision();
     fhp->propagate();

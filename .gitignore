@@ -1,6 +1,7 @@
 build/
 *.png
 *.mass
-*.velocity
+*.velocityX
+*.velocityY
 .DS_STORE
 *.info

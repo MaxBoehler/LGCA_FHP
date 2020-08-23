@@ -82,21 +82,24 @@ const void Visual::visualiseMass(std::string dt, std::string xr, std::string yr)
 }
 
 const void Visual::visualiseVel(std::string dt, std::string xr, std::string yr) {
-  std::ofstream outFile;
-  outFile.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocity");
+  std::ofstream outFileX, outFileY;
+  outFileX.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityX");
+  outFileY.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityY");
 
-  for (int i = 0; i < field.xVel.size(); i++) {
-    outFile << field.xVel.at(i);
-    if ( i != field.xVel.size() - 1) {
-      outFile << ',';
+  for (int y = 0; y < field.getYsize()/64; y++) {
+    for (int x = 0; x < field.getXsize(); x++) {
+      if ( x == field.getXsize() - 1 ) {
+        outFileX << field.xVel.at(y * field.getXsize() + x);
+        outFileY << field.yVel.at(y * field.getXsize() + x);
+      }
+      else {
+        outFileX << field.xVel.at(y * field.getXsize() + x) << ',';
+        outFileY << field.yVel.at(y * field.getXsize() + x) << ',';
+      }
     }
+    outFileX << '\n';
+    outFileY << '\n';
   }
-  outFile << '\n';
-  for (int i = 0; i < field.yVel.size(); i++) {
-    outFile << field.yVel.at(i);
-    if ( i != field.yVel.size() - 1) {
-      outFile << ',';
-    }
-  }
-  outFile.close();
+  outFileX.close();
+  outFileY.close();
 }

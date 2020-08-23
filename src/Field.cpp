@@ -59,6 +59,7 @@ Field::Field( int X,
     }
   }
   initializeField();
+  moveToBoundary();
 }
 
 bool Field::translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1temp,
@@ -234,6 +235,29 @@ void Field::initializeField() {
           putValue(fieldVector, x, y, cell, initBits);
         }
       }
+    }
+  }
+}
+
+void Field::moveToBoundary() {
+  for (int y = 0; y < ySize; y++) {
+    for (int cell = 0; cell < cellSize; cell++) {
+      wBoundary.at( y * cellSize + cell) = getValue(fieldVector, 0, y, cell);
+    }
+  }
+  for (int y = 0; y < ySize; y++) {
+    for (int cell = 0; cell < cellSize; cell++) {
+      eBoundary.at( y * cellSize + cell) = getValue(fieldVector, xSize - 1, y, cell);
+    }
+  }
+  for (int x = 0; x < xSize; x++) {
+    for (int cell = 0; cell < cellSize; cell++) {
+      nBoundary.at( x * cellSize + cell) = getValue(fieldVector, x, 0, cell);
+    }
+  }
+  for (int x = 0; x < xSize; x++) {
+    for (int cell = 0; cell < cellSize; cell++) {
+      sBoundary.at( x * cellSize + cell) = getValue(fieldVector, x, ySize - 1, cell);
     }
   }
 }
