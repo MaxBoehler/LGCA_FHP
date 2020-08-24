@@ -20,7 +20,7 @@ Field::Field( int X,
 
   fieldVector ((X/64) * Y * CELLS, 0),
   resultVector((X/64) * Y * CELLS, 0),
-  solidVector ((X/64) * Y,         1),
+  solidVector ((X/64) * Y,         ~uint64_t(0)),
   mass        ((X/64) * (Y/64),    0),
   xVel        ((X/64) * (Y/64),    0),
   yVel        ((X/64) * (Y/64),    0),
@@ -52,8 +52,8 @@ Field::Field( int X,
                                  sx0, sx1, sy0, sy1, xNodes, yNodes);
 
     if ( checkSolid) {
-      solidX0.push_back(sx0temp);
-      solidX1.push_back(sx1temp);
+      solidX0.push_back(sx0temp / 64);
+      solidX1.push_back(sx1temp / 64);
       solidY0.push_back(sy0temp);
       solidY1.push_back(sy1temp);
     }
@@ -218,7 +218,7 @@ void Field::initializeField() {
     for (int x = 0; x < xSize; x++) {
       checkSolid = false;
       for (int i = 0; i < solidX0.size(); i++) {
-        if ((x >= solidX0.at(i)/64 && x < solidX1.at(i)/64) && (y >= solidY0.at(i) && y < solidY1.at(i)) ) {
+        if ((x >= solidX0.at(i) && x < solidX1.at(i)) && (y >= solidY0.at(i) && y < solidY1.at(i)) ) {
           solidVector.at( y*xSize+x ) = uint64_t(0);
           checkSolid = true;
         }

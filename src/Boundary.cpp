@@ -143,20 +143,22 @@ bool Boundary::applyDynamicBoundary(int x, int y) {
   bool checkDynamic{false}, checkTemp;
   int x0, x1, y0, y1;
 
-  for (int i = 0; i < bouncebackX0.size(); i++) {
-    x0 = bouncebackX0.at(i) / 64;
-    x1 = bouncebackX1.at(i) / 64;
-    y0 = bouncebackY0.at(i);
-    y1 = bouncebackY1.at(i);
-
+  if (bouncebackX0.size() == 0) {
     checkTemp = dynamicBoundaryType(x, y, x0, x1, y0, y1, BoundaryCondition::BOUNCEBACK);
     if (checkTemp == true) checkDynamic = true;
+  } else {
+    for (int i = 0; i < bouncebackX0.size(); i++) {
+      x0 = bouncebackX0.at(i) / 64;
+      x1 = bouncebackX1.at(i) / 64;
+      y0 = bouncebackY0.at(i);
+      y1 = bouncebackY1.at(i);
 
+      checkTemp = dynamicBoundaryType(x, y, x0, x1, y0, y1, BoundaryCondition::BOUNCEBACK);
+      if (checkTemp == true) checkDynamic = true;
+    }
   }
 
   return checkDynamic;
-
-
 }
 
 void Boundary::staticBoundaryType(int x0, int x1, int y0, int y1, BoundaryCondition bnc, int cell, uint64_t value) {
