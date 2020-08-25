@@ -91,8 +91,6 @@ def visualiseMass(path, video):
         maxVals.append(np.amax(data))
     maxVal = np.amax(maxVals)
 
-    ratio = (np.shape(data)[0]) / np.shape(data)[1]
-
     for file in glob.glob(os.path.join(path, "*.xml")):
         filename = file.replace(".xml", '')
     infoFile = open(filename + ".info")
@@ -101,30 +99,22 @@ def visualiseMass(path, video):
         temp = line.strip().split("=")[-1]
         info.append(int(temp))
 
+    yDim = info[5]*info[1]/64
+    xDim = info[4]*info[0]
+    ratio = (yDim) / xDim
+
     for time in range(0, info[2] + info[3], info[3]):
-        yData = []
-        for MPIY in range(info[1]):
-            xData = []
-            for MPIX in range(info[0]):
-                xData.append(np.genfromtxt(filename + "_{:06d}_{:03d}_{:03d}.mass".format(time, MPIX, MPIY), delimiter=","))
+        try:
+            dataMASS = concatenateData("mass", info, filename, time)
 
-            dataMPIX = xData[0]
-            for i in range(1, len(xData)):
-                dataMPIX = np.concatenate((dataMPIX,xData[i]),axis=1)
-
-
-            yData.append(dataMPIX)
-
-        dataMASS = yData[0]
-        for i in range(1, len(yData)):
-            dataMASS = np.concatenate((dataMASS,yData[i]))
-
-        plt.figure(figsize=(8,8*ratio))
-        plt.title("Timestep: {}; mean mass = {:.3f}".format(time, np.mean(dataMASS)))
-        plt.imshow(dataMASS, vmin=0, vmax=maxVal)
-        plt.savefig(filename + "_mass_" + str(time) + ".png", dpi=300, bbox_inches="tight")
-        plt.close()
-        print("Mass -> Timestep {} done!".format(time))
+            plt.figure(figsize=(8,8*ratio))
+            plt.title("Timestep: {}; mean mass = {:.3f}".format(time, np.mean(dataMASS)))
+            plt.imshow(dataMASS, vmin=0, vmax=maxVal)
+            plt.savefig(filename + "_mass_" + str(time) + ".png", dpi=300, bbox_inches="tight")
+            plt.close()
+            print("Mass -> Timestep {} done!".format(time))
+        except Exception:
+            print("Mass -> Timestep {} ERROR! File not found".format(time))
 
     if video:
         generateVideo(path, "velocity.mp4", "velocity")
@@ -145,22 +135,25 @@ def visualiseVelocity(path, video):
 
     X, Y = np.meshgrid(np.arange(0, int(xDim)), np.arange(0, int(yDim)))
 
-    ratio = (yDim) / xDim
+    ratio = yDim / xDim
 
     for time in range(0, info[2] + info[3], info[3]):
-        dataVELX = concatenateData("velocityX", info, filename, time)
-        dataVELY = concatenateData("velocityY", info, filename, time)
+        try:
+            dataVELX = concatenateData("velocityX", info, filename, time)
+            dataVELY = concatenateData("velocityY", info, filename, time)
 
-        meanX = np.mean(dataVELX)
-        meanY = np.mean(dataVELY)
+            meanX = np.mean(dataVELX)
+            meanY = np.mean(dataVELY)
 
-        plt.figure(figsize=(8, 8 * ratio))
-        plt.title("Timestep: {}".format(time))
-        plt.quiver(X,Y,dataVELX,-dataVELY, scale=1, units='xy')
-        plt.gca().invert_yaxis()
-        plt.savefig(filename + "_velocity_" + str(time) + ".png", dpi=300, bbox_inches="tight")
-        plt.close()
-        print("Velocity -> Timestep {} done!".format(time))
+            plt.figure(figsize=(8, 8 * ratio))
+            plt.title("Timestep: {}".format(time))
+            plt.quiver(X,Y,dataVELX,-dataVELY, scale=1, units='xy')
+            plt.gca().invert_yaxis()
+            plt.savefig(filename + "_velocity_" + str(time) + ".png", dpi=300, bbox_inches="tight")
+            plt.close()
+            print("Velocity -> Timestep {} done!".format(time))
+        except Exception:
+            print("Velocity -> Timestep {} ERROR! File not found".format(time))
 
     if video:
         generateVideo(path, "velocity.mp4", "velocity")
