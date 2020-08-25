@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
   const int tend      {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "tend" ) ->FirstChild()->ToText()->Value())};
   const int fhpChoice {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "fhp" )  ->FirstChild()->ToText()->Value())};
 
-  if (rank == 0) std::cout << "Setup fields ... " << '\n' << std::endl;
+  if (rank == 0) std::cout << "Setup fields ... " << '\n';
 
   auto t0 = std::chrono::high_resolution_clock::now();
 
@@ -85,14 +85,16 @@ int main(int argc, char *argv[]) {
 
   MPI_Barrier(CART_COMM);
 
-  if (cart_rank == 0) std::cout << "All processes done!" << '\n' << std::endl;
+  if (cart_rank == 0) std::cout << "All fields are ready!" << "\n\n";
 
   std::unique_ptr<FHP>fhp;
   if (fhpChoice == 1 && cells == 6) {
     if (cart_rank == 0) std::cout << "Setup FHP_I model ..." << '\n';
     fhp = std::make_unique<FHP_I>(field);
+    if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
   } else if (fhpChoice == 2 && cells == 7) {
     if (cart_rank == 0) std::cout << "Setup FHP_II model ..." << '\n';
+    if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
     fhp = std::make_unique<FHP_II>(field);
   } else {
     if (cart_rank == 0) std::cout << "Wrong setup of FHP model. Please check your XML file!" << "\n\n";
@@ -105,7 +107,9 @@ int main(int argc, char *argv[]) {
 
   auto t1 = std::chrono::high_resolution_clock::now();
 
-  if (cart_rank == 0) std::cout << "Starting Simulation ... " << '\n';
+  if (cart_rank == 0)std::cout << "------------------------" << '\n'
+                               << "Starting Simulation ... " << '\n'
+                               << "------------------------" << '\n';
 
   // mainloop: measure und visualize current field -> do collision -> propagate
   for (int t = 0; t <= tend; t++) {
