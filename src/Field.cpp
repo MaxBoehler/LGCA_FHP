@@ -295,7 +295,7 @@ void Field::measureField() {
         coarseGrainYvel = 0;
       }
     }
-    if (y != 0 && y % 64 == 0) yCoarse++;
+    if ((y + 1) % 64 == 0) yCoarse++;
   }
 
   for (int i = 0; i < mass.size(); i++) {

@@ -144,7 +144,7 @@ bool Boundary::applyDynamicBoundary(int x, int y) {
   int x0, x1, y0, y1;
 
   if (bouncebackX0.size() == 0) {
-    checkTemp = dynamicBoundaryType(x, y, x0, x1, y0, y1, BoundaryCondition::BOUNCEBACK);
+    checkTemp = dynamicBoundaryType(x, y, 0, 0, 0, 0, BoundaryCondition::BOUNCEBACK);
     if (checkTemp == true) checkDynamic = true;
   } else {
     for (int i = 0; i < bouncebackX0.size(); i++) {
@@ -185,8 +185,8 @@ bool Boundary::dynamicBoundaryType(int x, int y, int x0, int x1, int y0, int y1,
 
 void Boundary::dirichlet(int x0, int x1, int y0, int y1, int cell, uint64_t value) {
   uint64_t tempValue;
-  for (int y = y0; y < y1 + 1; y++) {
-    for (int x = x0; x < x1 + 1; x++) {
+  for (int y = y0; y <= y1; y++) {
+    for (int x = x0; x <= x1; x++) {
       tempValue = field.getValue(field.fieldVector, x, y, cell) | value;
       field.putValue(field.fieldVector, x, y, cell, tempValue);
     }
@@ -196,7 +196,7 @@ void Boundary::dirichlet(int x0, int x1, int y0, int y1, int cell, uint64_t valu
 bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1) {
   uint64_t c0, c1, c2, c3, c4, c5;
 
-  if (field.solidVector.at(y * field.getXsize() + x) == 0 || ((x >= x0 && x <= x1 ) && (y >= y0 && y <= y1)) ) {
+  if (field.solidVector.at(y * field.getXsize() + x) == 0 || ((x >= x0 && x <= x1 ) && (y >= y0 && y < y1)) ) {
 
         c0 = field.getValue(field.fieldVector, x, y, 0);
         c1 = field.getValue(field.fieldVector, x, y, 1);
