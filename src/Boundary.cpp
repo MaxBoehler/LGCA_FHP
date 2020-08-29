@@ -47,7 +47,6 @@ Boundary::Boundary(Field& FIELD) : field{FIELD} {
                                     bx0, bx1, by0, by1, xNodes, yNodes);
 
     if ( checkBoundary) {
-
       bouncebackX0.push_back(bx0temp);
       bouncebackX1.push_back(bx1temp);
       bouncebackY0.push_back(by0temp);
@@ -196,7 +195,8 @@ void Boundary::dirichlet(int x0, int x1, int y0, int y1, int cell, uint64_t valu
 bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1) {
   uint64_t c0, c1, c2, c3, c4, c5;
 
-  if (field.solidVector.at(y * field.getXsize() + x) == 0 || ((x >= x0 && x <= x1 ) && (y >= y0 && y < y1)) ) {
+
+  if (field.solidVector.at(y * field.getXsize() + x) == 0 || ((x >= x0 && x <= x1 ) && (y >= y0 && y <= y1)) ) {
 
         c0 = field.getValue(field.fieldVector, x, y, 0);
         c1 = field.getValue(field.fieldVector, x, y, 1);
@@ -213,8 +213,7 @@ bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1) {
         field.putValue(field.resultVector, x, y, 5, c2);
 
         return true;
-  }
-  else {
+  } else {
     return false;
   }
 }

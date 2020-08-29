@@ -71,31 +71,30 @@ int main(int argc, char *argv[]) {
   // read general parameters from xml
   const int x         {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "x" )    ->FirstChild()->ToText()->Value()) / col_size};
   const int y         {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "y" )    ->FirstChild()->ToText()->Value()) / row_size};
-  const int cells     {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "cells" )->FirstChild()->ToText()->Value())};
-  const double prob   {std::stod(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "p" )    ->FirstChild()->ToText()->Value())};
   const int tend      {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "tend" ) ->FirstChild()->ToText()->Value())};
   const int fhpChoice {std::stoi(doc.FirstChildElement( "lgca" )->FirstChildElement( "general" )->FirstChildElement( "fhp" )  ->FirstChild()->ToText()->Value())};
+  const int cells     {(fhpChoice == 1) ? 6 : 7};
 
   if (rank == 0) std::cout << "Setup fields ... " << '\n';
 
   auto t0 = std::chrono::high_resolution_clock::now();
 
   // create field, collision and visualisation object
-  Field field(x, y, col_rank, row_rank, cells, prob, &doc);
+  Field field(x, y, col_rank, row_rank, cells, &doc);
 
   MPI_Barrier(CART_COMM);
 
   if (cart_rank == 0) std::cout << "All fields are ready!" << "\n\n";
 
   std::unique_ptr<FHP>fhp;
-  if (fhpChoice == 1 && cells == 6) {
+  if (fhpChoice == 1) {
     if (cart_rank == 0) std::cout << "Setup FHP_I model ..." << '\n';
     fhp = std::make_unique<FHP_I>(field);
     if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
-  } else if (fhpChoice == 2 && cells == 7) {
+  } else if (fhpChoice == 2) {
     if (cart_rank == 0) std::cout << "Setup FHP_II model ..." << '\n';
-    if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
     fhp = std::make_unique<FHP_II>(field);
+    if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
   } else {
     if (cart_rank == 0) std::cout << "Wrong setup of FHP model. Please check your XML file!" << "\n\n";
     MPI_Finalize();
@@ -113,12 +112,14 @@ int main(int argc, char *argv[]) {
 
   // mainloop: measure und visualize current field -> do collision -> propagate
   for (int t = 0; t <= tend; t++) {
-    field.moveToBoundary();
     visual.visualise(t, col_rank, row_rank);
     fhp->collision();
+
+    field.exchangeBoundary(CART_COMM);
+    MPI_Barrier(CART_COMM);
+
     fhp->propagate();
 
-    MPI_Barrier(CART_COMM);
     if (t % 100 == 0) {
       if (cart_rank == 0) std::cout << "Timestep: " << t << '\n';
     }

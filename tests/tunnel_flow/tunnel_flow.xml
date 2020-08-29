@@ -1,13 +1,15 @@
 <lgca>
   <general>
-    <x>     8192  </x>
+    <x>     4096  </x>
     <y>     1792  </y>
-    <p>     0.5  </p>
-    <tend>  300   </tend>
-    <cells> 7     </cells>
+    <p>     0.3   </p>
+    <tend>  15000 </tend>
     <fhp>   2     </fhp>
-    <xMesh> 4     </xMesh>
+    <xMesh> 2     </xMesh>
     <yMesh> 2     </yMesh>
+
+    <init>
+    </init>
   </general>
 
   <measure>
@@ -39,15 +41,15 @@
 
   <dynamicBoundaries>
     <bounceback>
-      <x0> 1    </x0>
-      <x1> 4094 </x1>
+      <x0> 0    </x0>
+      <x1> 4096 </x1>
       <y0> 0    </y0>
       <y1> 0    </y1>
     </bounceback>
 
     <bounceback>
-      <x0> 1    </x0>
-      <x1> 4094 </x1>
+      <x0> 0    </x0>
+      <x1> 4096 </x1>
       <y0> 1791 </y0>
       <y1> 1791 </y1>
     </bounceback>

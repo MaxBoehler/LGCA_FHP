@@ -5,6 +5,7 @@
 #include <memory>
 #include <array>
 #include <cmath>
+#include <mpi.h>
 #include "tinyxml2.h"
 
 class Field {
@@ -15,12 +16,18 @@ private:
   const int cellSize;
   const int xRank;
   const int yRank;
-  const double p;
+        double pBackground;
 
   std::vector<int> solidX0;
   std::vector<int> solidX1;
   std::vector<int> solidY0;
   std::vector<int> solidY1;
+
+  std::vector<int> pX0;
+  std::vector<int> pX1;
+  std::vector<int> pY0;
+  std::vector<int> pY1;
+  std::vector<double> pVal;
 
   // Node of 6 particles
   //  0   1
@@ -41,6 +48,7 @@ private:
 
   void   initializeField();
   int    getBit(uint64_t node, int pos);
+  void   moveToBoundary();
   double getNeighbours(int x, int y, int cell, int bitCounter);
   bool   translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1temp,
                          int x0, int x1, int y0, int y1, int xNodes, int yNodes);
@@ -53,7 +61,6 @@ public:
          int XRANK,
          int YRANK,
          int CELLS,
-         double P,
          tinyxml2::XMLDocument* doc);
 
   std::vector<uint64_t> fieldVector;
@@ -69,10 +76,16 @@ public:
   std::vector<uint64_t> sBoundary;
   std::vector<uint64_t> wBoundary;
 
+  // buffer vector for MPI communication
+  std::vector<uint64_t> nBoundaryTEMP;
+  std::vector<uint64_t> eBoundaryTEMP;
+  std::vector<uint64_t> sBoundaryTEMP;
+  std::vector<uint64_t> wBoundaryTEMP;
+
   tinyxml2::XMLDocument* doc;
 
   void measureField();
-  void moveToBoundary();
+  void exchangeBoundary(MPI_Comm CART_COMM);
 
   // getter
   const uint64_t    getValue(std::vector<uint64_t>& vec, int x, int y, int cell);
