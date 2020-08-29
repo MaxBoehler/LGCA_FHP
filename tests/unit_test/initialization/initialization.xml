@@ -4,8 +4,17 @@
     <y>     2048 </y>
     <p>     0.3  </p>
     <tend>  5    </tend>
-    <cells> 6     </cells>
-    <fhp>   1     </fhp>
+    <fhp>   2     </fhp>
+    <xMesh> 1     </xMesh>
+    <yMesh> 1     </yMesh>
+
+    <init>
+      <x0> 768  </x0>
+      <x1> 1280 </x1>
+      <y0> 768  </y0>
+      <y1> 1280 </y1>
+    </init>
+
   </general>
 
   <measure>

@@ -4,8 +4,12 @@
     <y>     2048 </y>
     <p>     0    </p>
     <tend>  2400 </tend>
-    <cells> 6     </cells>
-    <fhp>   1     </fhp>
+    <fhp>   2     </fhp>
+    <xMesh> 1     </xMesh>
+    <yMesh> 1     </yMesh>
+
+    <init>
+    </init>
   </general>
 
   <measure>
