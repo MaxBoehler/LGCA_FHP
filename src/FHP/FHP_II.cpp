@@ -89,45 +89,44 @@ void FHP_II::propagate() {
 
       if (y % 2 == 0) {
         // Propagation in 0 Direction
-        // from even to odd rows
-        tempVal = (field.getValue(field.resultVector, x, y, 0) << 1) ^ (field.getValue(field.resultVector, x + 1, y, 0) >> 63);
-        field.putValue(field.fieldVector, x, y - 1, 0, tempVal);
+        // from odd to even rows
+        tempVal = field.getValue(field.resultVector, x, y + 1, 0);
+        field.putValue(field.fieldVector, x, y, 0, tempVal);
 
         // Propagation in 1 Direction
-        // from even to odd rows
-        tempVal = field.getValue(field.resultVector, x, y, 1);
-        field.putValue(field.fieldVector, x, y - 1, 1, tempVal);
+        // from odd to even rows
+        tempVal = (field.getValue(field.resultVector, x, y + 1, 1) >> 1) ^ (field.getValue(field.resultVector, x - 1, y + 1, 1) << 63);
+        field.putValue(field.fieldVector, x, y, 1, tempVal);
 
         // Propagation in 3 Direction
-        // from even to odd rows
-        tempVal = field.getValue(field.resultVector, x, y, 3);
-        field.putValue(field.fieldVector, x, y + 1, 3, tempVal);
+        // from odd to even rows
+        tempVal = (field.getValue(field.resultVector, x, y - 1, 3) >> 1) ^ (field.getValue(field.resultVector, x - 1, y - 1, 3) << 63);
+        field.putValue(field.fieldVector, x, y, 3, tempVal);
 
         // Propagation in 4 Direction
-        // from even to odd rows
-        tempVal = (field.getValue(field.resultVector, x, y, 4) << 1) ^ (field.getValue(field.resultVector, x + 1, y, 4) >> 63);
-        field.putValue(field.fieldVector, x, y + 1, 4, tempVal);
-      }
-      else {
+        // from odd to even rows
+        tempVal = field.getValue(field.resultVector, x, y - 1, 4);
+        field.putValue(field.fieldVector, x, y, 4, tempVal);
+      } else {
         // Propagation in 0 Direction
-        // from odd to even rows
-        tempVal = field.getValue(field.resultVector, x, y, 0);
-        field.putValue(field.fieldVector, x, y - 1, 0, tempVal);
+        // from even to odd rows
+        tempVal = (field.getValue(field.resultVector, x, y + 1, 0) << 1) ^ (field.getValue(field.resultVector, x + 1, y + 1, 0) >> 63);
+        field.putValue(field.fieldVector, x, y, 0, tempVal);
 
         // Propagation in 1 Direction
-        // from odd to even rows
-        tempVal = (field.getValue(field.resultVector, x, y, 1) >> 1) ^ (field.getValue(field.resultVector, x - 1, y, 1) << 63);
-        field.putValue(field.fieldVector, x, y - 1, 1, tempVal);
+        // from even to odd rows
+        tempVal = field.getValue(field.resultVector, x, y + 1, 1);
+        field.putValue(field.fieldVector, x, y, 1, tempVal);
 
         // Propagation in 3 Direction
-        // from odd to even rows
-        tempVal = (field.getValue(field.resultVector, x, y, 3) >> 1) ^ (field.getValue(field.resultVector, x - 1, y, 3) << 63);
-        field.putValue(field.fieldVector, x, y + 1, 3, tempVal);
+        // from even to odd rows
+        tempVal = field.getValue(field.resultVector, x, y - 1, 3);
+        field.putValue(field.fieldVector, x, y, 3, tempVal);
 
         // Propagation in 4 Direction
-        // from odd to even rows
-        tempVal = field.getValue(field.resultVector, x, y, 4);
-        field.putValue(field.fieldVector, x, y + 1, 4, tempVal);
+        // from even to odd rows
+        tempVal = (field.getValue(field.resultVector, x, y - 1, 4) << 1) ^ (field.getValue(field.resultVector, x + 1, y - 1, 4) >> 63);
+        field.putValue(field.fieldVector, x, y, 4, tempVal);
       }
 
       // Propagation in 2 Direction

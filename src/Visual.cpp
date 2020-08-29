@@ -27,31 +27,45 @@ Visual::Visual(Field& FIELD,
 
 }
 
-const void Visual::visualise(int currentTime) {
+const void Visual::visualInfo(int MPIX, int MPIY, int tend) {
+  std::ofstream outFile;
+  outFile.open(filename + ".info");
+  outFile << "MPIX=" << MPIX << '\n';
+  outFile << "MPIY=" << MPIY << '\n';
+  outFile << "TEND=" << tend << '\n';
+  outFile << "DT=" << mdt << '\n';
+  outFile << "XLOCAL=" << field.getXsize() << '\n';
+  outFile << "YLOCAL=" << field.getYsize() << '\n';
+  outFile.close();
+}
+
+const void Visual::visualise(int currentTime, int xRank, int yRank) {
   if (currentTime % mdt == 0 ) {
     field.measureField();
-    std::ostringstream ct;
+    std::ostringstream ct, xr, yr;
 
     ct << std::setw(6) << std::setfill('0') << currentTime;
+    xr << std::setw(3) << std::setfill('0') << xRank;
+    yr << std::setw(3) << std::setfill('0') << yRank;
 
     switch (type) {
       case VisualType::MASS:
-        visualiseMass(ct.str());
+        visualiseMass(ct.str(), xr.str(), yr.str());
         break;
       case VisualType::VELOCITY:
-        visualiseVel(ct.str());
+        visualiseVel(ct.str(), xr.str(), yr.str());
         break;
       case VisualType::ALL:
-        visualiseMass(ct.str());
-        visualiseVel(ct.str());
+        visualiseMass(ct.str(), xr.str(), yr.str());
+        visualiseVel(ct.str(), xr.str(), yr.str());
         break;
     }
   }
 }
 
-const void Visual::visualiseMass(std::string dt) {
+const void Visual::visualiseMass(std::string dt, std::string xr, std::string yr) {
   std::ofstream outFile;
-  outFile.open(filename + "_mass_t_" + dt + ".csv");
+  outFile.open(filename + "_" + dt + "_" + xr + "_" + yr + ".mass");
 
   for (int y = 0; y < field.getYsize()/64; y++) {
     for (int x = 0; x < field.getXsize(); x++) {
@@ -67,24 +81,25 @@ const void Visual::visualiseMass(std::string dt) {
   outFile.close();
 }
 
-const void Visual::visualiseVel(std::string dt) {
-  std::ofstream outFile;
-  outFile.open(filename + "_velocity_t_" + dt + ".csv");
-  outFile << field.getXsize() << '\n';
-  outFile << field.getYsize() << '\n';
+const void Visual::visualiseVel(std::string dt, std::string xr, std::string yr) {
+  std::ofstream outFileX, outFileY;
+  outFileX.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityX");
+  outFileY.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityY");
 
-  for (int i = 0; i < field.xVel.size(); i++) {
-    outFile << field.xVel.at(i);
-    if ( i != field.xVel.size() - 1) {
-      outFile << ',';
+  for (int y = 0; y < field.getYsize()/64; y++) {
+    for (int x = 0; x < field.getXsize(); x++) {
+      if ( x == field.getXsize() - 1 ) {
+        outFileX << field.xVel.at(y * field.getXsize() + x);
+        outFileY << field.yVel.at(y * field.getXsize() + x);
+      }
+      else {
+        outFileX << field.xVel.at(y * field.getXsize() + x) << ',';
+        outFileY << field.yVel.at(y * field.getXsize() + x) << ',';
+      }
     }
+    outFileX << '\n';
+    outFileY << '\n';
   }
-  outFile << '\n';
-  for (int i = 0; i < field.yVel.size(); i++) {
-    outFile << field.yVel.at(i);
-    if ( i != field.yVel.size() - 1) {
-      outFile << ',';
-    }
-  }
-  outFile.close();
+  outFileX.close();
+  outFileY.close();
 }

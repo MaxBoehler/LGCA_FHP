@@ -15,13 +15,12 @@ except Exception as e:
 
 def readCommandLineArguments():
     amount = len(sys.argv)
-    if amount < 5:
+    if amount < 4:
         raise Exception("Not enough input Parameters! Exiting program ...")
 
     path = sys.argv[1]
     type = sys.argv[2]
     video = sys.argv[3]
-    skip = sys.argv[4]
 
     if type != "all" and type != "mass" and type != "velocity":
         raise Exception("Unkown type! Use either mass, velocity or all!")
@@ -33,14 +32,7 @@ def readCommandLineArguments():
     else:
         raise Exception("Wrong input for video choice! Choose yes or no.")
 
-    if skip == "yes":
-        skip = True
-    elif skip == "no":
-        skip = False
-    else:
-        raise Exception("Wrong input for skip choice! Choose yes or no.")
-
-    return path, type, video, skip
+    return path, type, video
 
 def getCSVfiles(path):
     files = []
@@ -72,93 +64,115 @@ def generateVideo(path, filename, unit):
         ]
     )
 
+def concatenateData(type, info, filename, time):
+    yData = []
+    for MPIY in range(info[1]):
+        xData = []
+        for MPIX in range(info[0]):
+            xData.append(np.genfromtxt(filename + "_{:06d}_{:03d}_{:03d}.".format(time, MPIX, MPIY) + type, delimiter=","))
+
+        dataMPIX = xData[0]
+        for i in range(1, len(xData)):
+            dataMPIX = np.concatenate((dataMPIX,xData[i]),axis=1)
+
+
+        yData.append(dataMPIX)
+
+    DATA = yData[0]
+    for i in range(1, len(yData)):
+        DATA = np.concatenate((DATA,yData[i]))
+
+    return DATA
+
 def visualiseMass(path, video):
     maxVals = []
-    pathCSV = os.path.join(path, "*mass*.csv")
-    for file in sorted(glob.glob(pathCSV)):
+    for file in sorted(glob.glob(os.path.join(path, "*.mass"))):
         data = np.genfromtxt(file, delimiter=",")
         maxVals.append(np.amax(data))
     maxVal = np.amax(maxVals)
 
-    ratio = (np.shape(data)[0]) / np.shape(data)[1]
+    for file in glob.glob(os.path.join(path, "*.xml")):
+        filename = file.replace(".xml", '')
+    infoFile = open(filename + ".info")
+    info = []
+    for line in infoFile:
+        temp = line.strip().split("=")[-1]
+        info.append(int(temp))
 
+    yDim = info[5]*info[1]/64
+    xDim = info[4]*info[0]
+    ratio = (yDim) / xDim
 
-    for file in sorted(glob.glob(pathCSV)):
-        timestep = re.findall('\d+', file.split("_")[-1])[0]
+    for time in range(0, info[2] + info[3], info[3]):
+        try:
+            dataMASS = concatenateData("mass", info, filename, time)
 
-        data = np.genfromtxt(file, delimiter=",")
-        plt.figure(figsize=(8,8 * ratio))
-        plt.title("Timestep: {}; mean mass = {:.3f}".format(timestep, np.mean(data)))
-        plt.imshow(data, vmin=0, vmax=maxVal)#, origin='lower')
-        plt.savefig(file.replace(".csv", ".png"), dpi=300, bbox_inches="tight")
-        plt.close()
-        print("Mass -> Timestep {} done!".format(timestep))
+            plt.figure(figsize=(8,8*ratio))
+            plt.title("Timestep: {}; mean mass = {:.3f}".format(time, np.mean(dataMASS)))
+            plt.imshow(dataMASS, vmin=0, vmax=maxVal)
+            plt.savefig(filename + "_mass_" + str(time) + ".png", dpi=300, bbox_inches="tight")
+            plt.close()
+            print("Mass -> Timestep {} done!".format(time))
+        except Exception:
+            print("Mass -> Timestep {} ERROR! File not found".format(time))
 
     if video:
         generateVideo(path, "velocity.mp4", "velocity")
         print("Video generated successfully")
         print()
 
-def visualiseVelocity(path, video, skipOld):
-    pathCSV = os.path.join(path, "*velocity_*.csv")
-    for file in sorted(glob.glob(pathCSV)):
-        data = open(file).readlines()
-        xDim = int(data[0].strip())
-        yDim = int(data[1].strip())
-        Y = []
-        X = []
-        for y in range(int(yDim / 64)):
-            for x in range(xDim):
-                X.append(x)
-                Y.append(y)
+def visualiseVelocity(path, video):
+    for file in glob.glob(os.path.join(path, "*.xml")):
+        filename = file.replace(".xml", '')
+    infoFile = open(filename + ".info")
+    info = []
+    for line in infoFile:
+        temp = line.strip().split("=")[-1]
+        info.append(int(temp))
 
-        if skipOld:
-            doneFiles = getCSVfiles(path)
-        else:
-            doneFiles = []
+    yDim = info[5]*info[1]/64
+    xDim = info[4]*info[0]
 
-        break
+    X, Y = np.meshgrid(np.arange(0, int(xDim)), np.arange(0, int(yDim)))
 
-    ratio = (yDim / 64) / xDim
+    ratio = yDim / xDim
 
-    for file in sorted(glob.glob(pathCSV)):
-        timestep = re.findall('\d+', file.split("_")[-1])[0]
+    for time in range(0, info[2] + info[3], info[3]):
+        try:
+            dataVELX = concatenateData("velocityX", info, filename, time)
+            dataVELY = concatenateData("velocityY", info, filename, time)
 
-        if file.replace("dat/", "") in doneFiles:
-             print("Velocity -> Timestep {} already done -> Skip".format(timestep))
-        else:
-            data = np.genfromtxt(file, delimiter=",", skip_header=2)
-
-            meanX = np.mean(data[0])
-            meanY = np.mean(data[1])
+            meanX = np.mean(dataVELX)
+            meanY = np.mean(dataVELY)
 
             plt.figure(figsize=(8, 8 * ratio))
-            plt.title("Timestep: {}".format(timestep))
-            plt.quiver(X,Y,data[0],-data[1], scale=1, units='xy')
+            plt.title("Timestep: {}".format(time))
+            plt.quiver(X,Y,dataVELX,-dataVELY, scale=1, units='xy')
             plt.gca().invert_yaxis()
-            plt.savefig(file.replace(".csv", ".png"), dpi=200, bbox_inches="tight")
+            plt.savefig(filename + "_velocity_" + str(time) + ".png", dpi=300, bbox_inches="tight")
             plt.close()
-            print("Velocity -> Timestep {} done!".format(timestep))
+            print("Velocity -> Timestep {} done!".format(time))
+        except Exception:
+            print("Velocity -> Timestep {} ERROR! File not found".format(time))
 
     if video:
         generateVideo(path, "velocity.mp4", "velocity")
         print("Video generated successfully")
         print()
-
 
 
 if __name__ == "__main__":
     try:
-        path, type, video, skip = readCommandLineArguments()
+        path, type, video = readCommandLineArguments()
     except Exception as e:
         print(str(e))
         sys.exit()
 
     if type == "all":
-        visualiseVelocity(path, video=video, skipOld = skip)
+        visualiseVelocity(path, video=video)
         print("")
         visualiseMass(path, video=video)
     elif type == "mass":
         visualiseMass(path, video=video)
     else:
-        visualiseVelocity(path, video=video, skipOld = skip)
+        visualiseVelocity(path, video=video)

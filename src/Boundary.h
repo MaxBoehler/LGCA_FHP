@@ -56,6 +56,9 @@ private:
   std::vector<int>  bouncebackY0;
   std::vector<int>  bouncebackY1;
 
+  bool translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1temp,
+                       int x0, int x1, int y0, int y1, int xNodes, int yNodes);
+
 public:
   Boundary(Field& FIELD);
   void applyStaticBoundary ();
