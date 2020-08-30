@@ -41,17 +41,19 @@
 
   <dynamicBoundaries>
     <bounceback>
-      <x0> 0    </x0>
-      <x1> 4096 </x1>
-      <y0> 0    </y0>
-      <y1> 0    </y1>
+      <x0>        0      </x0>
+      <x1>        4096   </x1>
+      <y0>        0      </y0>
+      <y1>        0      </y1>
+      <direction> bottom </direction>
     </bounceback>
 
     <bounceback>
-      <x0> 0    </x0>
-      <x1> 4096 </x1>
-      <y0> 1791 </y0>
-      <y1> 1791 </y1>
+      <x0>        0      </x0>
+      <x1>        4096   </x1>
+      <y0>        1791   </y0>
+      <y1>        1791   </y1>
+      <direction> top    </direction>
     </bounceback>
   </dynamicBoundaries>
 
