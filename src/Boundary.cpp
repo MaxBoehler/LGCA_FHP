@@ -172,14 +172,19 @@ void Boundary::staticBoundaryType(int x0, int x1, int y0, int y1, BoundaryCondit
 }
 
 bool Boundary::dynamicBoundaryType(int x, int y, int x0, int x1, int y0, int y1, BoundaryCondition bnc) {
+  bool checkBoundary;
   switch (bnc) {
     case BoundaryCondition::DIRICHLET:
-      return false;
+      checkBoundary = false;
+      break;
     case BoundaryCondition::BOUNCEBACK:
-      return bounceback(x, y, x0, x1, y0, y1);
+      checkBoundary = bounceback(x, y, x0, x1, y0, y1);
+      break;
     case BoundaryCondition::NONE:
-      return false;
+    checkBoundary = false;
+    break;
   }
+  return checkBoundary;
 }
 
 void Boundary::dirichlet(int x0, int x1, int y0, int y1, int cell, uint64_t value) {
