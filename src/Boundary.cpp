@@ -215,18 +215,18 @@ bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1, std::str
 
         if (direction == "right") {
           field.putValue(field.resultVector, x, y, 0, ((c0 << 1) >> 1) | (c3 << 63));
-          field.putValue(field.resultVector, x, y, 1, ((c0 << 1) >> 1) | (c4 << 63));
-          field.putValue(field.resultVector, x, y, 2, ((c0 << 1) >> 1) | (c5 << 63));
-          field.putValue(field.resultVector, x, y, 3, ((c0 << 1) >> 1) | (c0 << 63));
-          field.putValue(field.resultVector, x, y, 4, ((c0 << 1) >> 1) | (c1 << 63));
-          field.putValue(field.resultVector, x, y, 5, ((c0 << 1) >> 1) | (c2 << 63));
+          field.putValue(field.resultVector, x, y, 1, ((c1 << 1) >> 1) | (c4 << 63));
+          field.putValue(field.resultVector, x, y, 2, ((c2 << 1) >> 1) | (c5 << 63));
+          field.putValue(field.resultVector, x, y, 3, ((c3 << 1) >> 1) | (c0 << 63));
+          field.putValue(field.resultVector, x, y, 4, ((c4 << 1) >> 1) | (c1 << 63));
+          field.putValue(field.resultVector, x, y, 5, ((c5 << 1) >> 1) | (c2 << 63));
         } else if (direction == "left") {
           field.putValue(field.resultVector, x, y, 0, ((c0 >> 1) << 1) | ((c3 << 63) >> 63));
-          field.putValue(field.resultVector, x, y, 1, ((c0 >> 1) << 1) | ((c4 << 63) >> 63));
-          field.putValue(field.resultVector, x, y, 2, ((c0 >> 1) << 1) | ((c5 << 63) >> 63));
-          field.putValue(field.resultVector, x, y, 3, ((c0 >> 1) << 1) | ((c0 << 63) >> 63));
-          field.putValue(field.resultVector, x, y, 4, ((c0 >> 1) << 1) | ((c1 << 63) >> 63));
-          field.putValue(field.resultVector, x, y, 5, ((c0 >> 1) << 1) | ((c2 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 1, ((c1 >> 1) << 1) | ((c4 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 2, ((c2 >> 1) << 1) | ((c5 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 3, ((c3 >> 1) << 1) | ((c0 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 4, ((c4 >> 1) << 1) | ((c1 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 5, ((c5 >> 1) << 1) | ((c2 << 63) >> 63));
         } else {
           field.putValue(field.resultVector, x, y, 0, c3);
           field.putValue(field.resultVector, x, y, 1, c4);
