@@ -28,14 +28,15 @@ Visual::Visual(Field& FIELD,
 }
 
 const void Visual::visualInfo(int MPIX, int MPIY, int tend) {
-  std::ofstream outFile;
-  outFile.open(filename + ".info");
-  outFile << "MPIX=" << MPIX << '\n';
-  outFile << "MPIY=" << MPIY << '\n';
-  outFile << "TEND=" << tend << '\n';
-  outFile << "DT=" << mdt << '\n';
-  outFile << "XLOCAL=" << field.getXsize() << '\n';
-  outFile << "YLOCAL=" << field.getYsize() << '\n';
+  int xSize{field.getXsize()};
+  int ySize{field.getYsize()};
+  std::ofstream outFile(filename + ".info", std::ios::out | std::ios::binary);
+  outFile.write(reinterpret_cast<char*>( &MPIX  ), sizeof( MPIX  ));
+  outFile.write(reinterpret_cast<char*>( &MPIY  ), sizeof( MPIY  ));
+  outFile.write(reinterpret_cast<char*>( &tend  ), sizeof( tend  ));
+  outFile.write(reinterpret_cast<char*>( &mdt   ), sizeof( mdt   ));
+  outFile.write(reinterpret_cast<char*>( &xSize ), sizeof( xSize ));
+  outFile.write(reinterpret_cast<char*>( &ySize ), sizeof( ySize ));
   outFile.close();
 }
 
@@ -64,41 +65,25 @@ const void Visual::visualise(int currentTime, int xRank, int yRank) {
 }
 
 const void Visual::visualiseMass(std::string dt, std::string xr, std::string yr) {
-  std::ofstream outFile;
-  outFile.open(filename + "_" + dt + "_" + xr + "_" + yr + ".mass");
+  std::ofstream outFile(filename + "_" + dt + "_" + xr + "_" + yr + ".mass", std::ios::out | std::ios::binary);
 
   for (int y = 0; y < field.getYsize()/64; y++) {
     for (int x = 0; x < field.getXsize(); x++) {
-      if ( x == field.getXsize() - 1 ) {
-        outFile << field.mass.at(y * field.getXsize() + x);
-      }
-      else {
-        outFile << field.mass.at(y * field.getXsize() + x) << ',';
-      }
+      outFile.write(reinterpret_cast<char*>( &(field.mass.at(y * field.getXsize() + x))  ), sizeof( field.mass.at(y * field.getXsize() + x) ));
     }
-    outFile << '\n';
+    outFile.close();
   }
-  outFile.close();
 }
 
 const void Visual::visualiseVel(std::string dt, std::string xr, std::string yr) {
-  std::ofstream outFileX, outFileY;
-  outFileX.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityX");
-  outFileY.open(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityY");
+  std::ofstream outFileX(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityX", std::ios::out | std::ios::binary);
+  std::ofstream outFileY(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityY", std::ios::out | std::ios::binary);
 
   for (int y = 0; y < field.getYsize()/64; y++) {
     for (int x = 0; x < field.getXsize(); x++) {
-      if ( x == field.getXsize() - 1 ) {
-        outFileX << field.xVel.at(y * field.getXsize() + x);
-        outFileY << field.yVel.at(y * field.getXsize() + x);
-      }
-      else {
-        outFileX << field.xVel.at(y * field.getXsize() + x) << ',';
-        outFileY << field.yVel.at(y * field.getXsize() + x) << ',';
-      }
+      outFileX.write(reinterpret_cast<char*>( &(field.xVel.at(y * field.getXsize() + x))  ), sizeof( field.xVel.at(y * field.getXsize() + x) ));
+      outFileY.write(reinterpret_cast<char*>( &(field.yVel.at(y * field.getXsize() + x))  ), sizeof( field.yVel.at(y * field.getXsize() + x) ));
     }
-    outFileX << '\n';
-    outFileY << '\n';
   }
   outFileX.close();
   outFileY.close();
