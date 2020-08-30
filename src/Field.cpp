@@ -240,7 +240,7 @@ void Field::initializeField() {
   std::mt19937 mt{rd()};
   std::uniform_real_distribution<double> bitDist(0.0, 1.0);
   bool checkSolid;
-  double p;
+  double p{pBackground};
 
   for (int y = 0; y < ySize; y++) {
     for (int x = 0; x < xSize; x++) {
@@ -252,22 +252,21 @@ void Field::initializeField() {
         }
       }
       if (checkSolid == false) {
+        p = pBackground;
         for (int i = 0; i < pX0.size(); i++) {
           if ((x >= pX0.at(i) && x < pX1.at(i)) && (y >= pY0.at(i) && y < pY1.at(i)) ) {
             p = pVal.at(i);
-          } else {
-            p = pBackground;
           }
-          for (int cell = 0; cell < cellSize; cell++) {
-            uint64_t initBits{0};
-            uint64_t rndBit{0};
-            for (int bit = 0; bit < 64; bit++)
-            {
-                rndBit = bitDist(mt) <= p ? uint64_t(1) : uint64_t(0);
-                initBits = rndBit ^ (initBits << 1);
-            }
-            putValue(fieldVector, x, y, cell, initBits);
+        }
+        for (int cell = 0; cell < cellSize; cell++) {
+          uint64_t initBits{0};
+          uint64_t rndBit{0};
+          for (int bit = 0; bit < 64; bit++)
+          {
+              rndBit = bitDist(mt) <= p ? uint64_t(1) : uint64_t(0);
+              initBits = rndBit ^ (initBits << 1);
           }
+          putValue(fieldVector, x, y, cell, initBits);
         }
       }
     }
