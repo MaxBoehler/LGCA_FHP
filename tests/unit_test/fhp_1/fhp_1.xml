@@ -1,0 +1,61 @@
+<lgca>
+  <general>
+    <x>     2048  </x>
+    <y>     2048  </y>
+    <p>     0.3   </p>
+    <tend>  10000 </tend>
+    <fhp>   1     </fhp>
+    <xMesh> 2     </xMesh>
+    <yMesh> 2     </yMesh>
+
+    <init>
+      <x0> 768  </x0>
+      <x1> 1280  </x1>
+      <y0> 768  </y0>
+      <y1> 1280 </y1>
+      <p>  0.7  </p>
+    </init>
+  </general>
+
+  <measure>
+    <time> 100 </time>
+    <type> all </type>
+  </measure>
+
+  <obstacles>
+  </obstacles>
+
+  <staticBoundaries>
+  </staticBoundaries>
+
+  <dynamicBoundaries>
+    <bounceback>
+      <x0> 0    </x0>
+      <x1> 0    </x1>
+      <y0> 0    </y0>
+      <y1> 2047 </y1>
+    </bounceback>
+
+    <bounceback>
+      <x0> 2047 </x0>
+      <x1> 2047 </x1>
+      <y0> 0    </y0>
+      <y1> 2047 </y1>
+    </bounceback>
+
+    <bounceback>
+      <x0> 0    </x0>
+      <x1> 2047 </x1>
+      <y0> 0    </y0>
+      <y1> 0    </y1>
+    </bounceback>
+
+    <bounceback>
+      <x0> 0    </x0>
+      <x1> 4097 </x1>
+      <y0> 2047  </y0>
+      <y1> 2047  </y1>
+    </bounceback>
+  </dynamicBoundaries>
+
+</lgca>
