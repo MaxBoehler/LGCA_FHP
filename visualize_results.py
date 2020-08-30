@@ -64,12 +64,23 @@ def generateVideo(path, filename, unit):
         ]
     )
 
+def getBinary(filename, info):
+    ySize = int(info[5]/64)
+    xSize = info[4]
+    data = np.zeros((ySize, xSize))
+    dataRAW = np.fromfile(filename, np.float64)
+    for i in range(ySize):
+        for j in range(xSize):
+            data[i,j] = dataRAW[i*info[4] + j]
+
+    return data
+
 def concatenateData(type, info, filename, time):
     yData = []
     for MPIY in range(info[1]):
         xData = []
         for MPIX in range(info[0]):
-            xData.append(np.genfromtxt(filename + "_{:06d}_{:03d}_{:03d}.".format(time, MPIX, MPIY) + type, delimiter=","))
+            xData.append(getBinary(filename + "_{:06d}_{:03d}_{:03d}.".format(time, MPIX, MPIY) + type, info))
 
         dataMPIX = xData[0]
         for i in range(1, len(xData)):
@@ -85,19 +96,15 @@ def concatenateData(type, info, filename, time):
     return DATA
 
 def visualiseMass(path, video):
-    maxVals = []
-    for file in sorted(glob.glob(os.path.join(path, "*.mass"))):
-        data = np.genfromtxt(file, delimiter=",")
-        maxVals.append(np.amax(data))
-    maxVal = np.amax(maxVals)
-
     for file in glob.glob(os.path.join(path, "*.xml")):
         filename = file.replace(".xml", '')
-    infoFile = open(filename + ".info")
-    info = []
-    for line in infoFile:
-        temp = line.strip().split("=")[-1]
-        info.append(int(temp))
+    info = np.fromfile(filename + ".info", np.uint32)
+
+    maxVals = []
+    for file in sorted(glob.glob(os.path.join(path, "*.mass"))):
+        data = getBinary(file, info)
+        maxVals.append(np.amax(data))
+    maxVal = np.amax(maxVals)
 
     yDim = info[5]*info[1]/64
     xDim = info[4]*info[0]
@@ -124,11 +131,7 @@ def visualiseMass(path, video):
 def visualiseVelocity(path, video):
     for file in glob.glob(os.path.join(path, "*.xml")):
         filename = file.replace(".xml", '')
-    infoFile = open(filename + ".info")
-    info = []
-    for line in infoFile:
-        temp = line.strip().split("=")[-1]
-        info.append(int(temp))
+    info = np.fromfile(filename + ".info", np.uint32)
 
     yDim = info[5]*info[1]/64
     xDim = info[4]*info[0]
