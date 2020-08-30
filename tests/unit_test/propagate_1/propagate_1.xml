@@ -7,9 +7,6 @@
     <fhp>   2     </fhp>
     <xMesh> 1     </xMesh>
     <yMesh> 1     </yMesh>
-
-    <init>
-    </init>
   </general>
 
   <measure>
@@ -30,11 +27,9 @@
       <value>     1     </value>
       <direction> top </direction>
     </dirichlet>
-
   </staticBoundaries>
 
   <dynamicBoundaries>
-
   </dynamicBoundaries>
 
 </lgca>

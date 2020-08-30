@@ -5,11 +5,8 @@
     <p>     0    </p>
     <tend>  2400 </tend>
     <fhp>   2     </fhp>
-    <xMesh> 1     </xMesh>
-    <yMesh> 1     </yMesh>
-
-    <init>
-    </init>
+    <xMesh> 2     </xMesh>
+    <yMesh> 2     </yMesh>
   </general>
 
   <measure>
