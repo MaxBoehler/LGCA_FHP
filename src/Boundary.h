@@ -27,6 +27,7 @@ private:
                            int x1 = 0,
                            int y0 = 0,
                            int y1 = 0,
+                           std::string direction = "none",
                            BoundaryCondition bnc = BoundaryCondition::NONE);
 
   void dirichlet (int x0,
@@ -41,7 +42,8 @@ private:
                   int x0,
                   int x1,
                   int y0,
-                  int y1);
+                  int y1,
+                  std::string direction);
 
   std::vector<int>          dirichletX0;
   std::vector<int>          dirichletX1;
@@ -51,10 +53,11 @@ private:
   std::vector<bool>         dirichletValue;
   std::vector<std::string>  dirichletDirection;
 
-  std::vector<int>  bouncebackX0;
-  std::vector<int>  bouncebackX1;
-  std::vector<int>  bouncebackY0;
-  std::vector<int>  bouncebackY1;
+  std::vector<int>         bouncebackX0;
+  std::vector<int>         bouncebackX1;
+  std::vector<int>         bouncebackY0;
+  std::vector<int>         bouncebackY1;
+  std::vector<std::string> bouncebackDirection;
 
   bool translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1temp,
                        int x0, int x1, int y0, int y1, int xNodes, int yNodes);

@@ -51,6 +51,7 @@ Boundary::Boundary(Field& FIELD) : field{FIELD} {
       bouncebackX1.push_back(bx1temp);
       bouncebackY0.push_back(by0temp);
       bouncebackY1.push_back(by1temp);
+      bouncebackDirection.push_back(bounceback->FirstChildElement( "direction" )->FirstChild()->ToText()->Value());
     }
   }
 }
@@ -141,9 +142,10 @@ void Boundary::applyStaticBoundary() {
 bool Boundary::applyDynamicBoundary(int x, int y) {
   bool checkDynamic{false}, checkTemp;
   int x0, x1, y0, y1;
+  std::string direction;
 
   if (bouncebackX0.size() == 0) {
-    checkTemp = dynamicBoundaryType(x, y, 0, 0, 0, 0, BoundaryCondition::BOUNCEBACK);
+    checkTemp = dynamicBoundaryType(x, y, 0, 0, 0, 0, "none", BoundaryCondition::BOUNCEBACK);
     if (checkTemp == true) checkDynamic = true;
   } else {
     for (int i = 0; i < bouncebackX0.size(); i++) {
@@ -151,8 +153,9 @@ bool Boundary::applyDynamicBoundary(int x, int y) {
       x1 = bouncebackX1.at(i) / 64;
       y0 = bouncebackY0.at(i);
       y1 = bouncebackY1.at(i);
+      direction = bouncebackDirection.at(i);
 
-      checkTemp = dynamicBoundaryType(x, y, x0, x1, y0, y1, BoundaryCondition::BOUNCEBACK);
+      checkTemp = dynamicBoundaryType(x, y, x0, x1, y0, y1, direction, BoundaryCondition::BOUNCEBACK);
       if (checkTemp == true) checkDynamic = true;
     }
   }
@@ -171,14 +174,14 @@ void Boundary::staticBoundaryType(int x0, int x1, int y0, int y1, BoundaryCondit
   }
 }
 
-bool Boundary::dynamicBoundaryType(int x, int y, int x0, int x1, int y0, int y1, BoundaryCondition bnc) {
+bool Boundary::dynamicBoundaryType(int x, int y, int x0, int x1, int y0, int y1, std::string direction, BoundaryCondition bnc) {
   bool checkBoundary;
   switch (bnc) {
     case BoundaryCondition::DIRICHLET:
       checkBoundary = false;
       break;
     case BoundaryCondition::BOUNCEBACK:
-      checkBoundary = bounceback(x, y, x0, x1, y0, y1);
+      checkBoundary = bounceback(x, y, x0, x1, y0, y1, direction);
       break;
     case BoundaryCondition::NONE:
     checkBoundary = false;
@@ -197,12 +200,12 @@ void Boundary::dirichlet(int x0, int x1, int y0, int y1, int cell, uint64_t valu
   }
 }
 
-bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1) {
+bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1, std::string direction) {
   uint64_t c0, c1, c2, c3, c4, c5;
-
 
   if (field.solidVector.at(y * field.getXsize() + x) == 0 || ((x >= x0 && x <= x1 ) && (y >= y0 && y <= y1)) ) {
 
+        direction.erase(std::remove_if(direction.begin(), direction.end(), isspace), direction.end());
         c0 = field.getValue(field.fieldVector, x, y, 0);
         c1 = field.getValue(field.fieldVector, x, y, 1);
         c2 = field.getValue(field.fieldVector, x, y, 2);
@@ -210,15 +213,28 @@ bool Boundary::bounceback(int x, int y, int x0, int x1, int y0, int y1) {
         c4 = field.getValue(field.fieldVector, x, y, 4);
         c5 = field.getValue(field.fieldVector, x, y, 5);
 
-        field.putValue(field.resultVector, x, y, 0, c3);
-        field.putValue(field.resultVector, x, y, 1, c4);
-        field.putValue(field.resultVector, x, y, 2, c5);
-        field.putValue(field.resultVector, x, y, 3, c0);
-        field.putValue(field.resultVector, x, y, 4, c1);
-        field.putValue(field.resultVector, x, y, 5, c2);
-
+        if (direction == "right") {
+          field.putValue(field.resultVector, x, y, 0, ((c0 << 1) >> 1) | (c3 << 63));
+          field.putValue(field.resultVector, x, y, 1, ((c0 << 1) >> 1) | (c4 << 63));
+          field.putValue(field.resultVector, x, y, 2, ((c0 << 1) >> 1) | (c5 << 63));
+          field.putValue(field.resultVector, x, y, 3, ((c0 << 1) >> 1) | (c0 << 63));
+          field.putValue(field.resultVector, x, y, 4, ((c0 << 1) >> 1) | (c1 << 63));
+          field.putValue(field.resultVector, x, y, 5, ((c0 << 1) >> 1) | (c2 << 63));
+        } else if (direction == "left") {
+          field.putValue(field.resultVector, x, y, 0, ((c0 >> 1) << 1) | ((c3 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 1, ((c0 >> 1) << 1) | ((c4 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 2, ((c0 >> 1) << 1) | ((c5 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 3, ((c0 >> 1) << 1) | ((c0 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 4, ((c0 >> 1) << 1) | ((c1 << 63) >> 63));
+          field.putValue(field.resultVector, x, y, 5, ((c0 >> 1) << 1) | ((c2 << 63) >> 63));
+        } else {
+          field.putValue(field.resultVector, x, y, 0, c3);
+          field.putValue(field.resultVector, x, y, 1, c4);
+          field.putValue(field.resultVector, x, y, 2, c5);
+          field.putValue(field.resultVector, x, y, 3, c0);
+          field.putValue(field.resultVector, x, y, 4, c1);
+          field.putValue(field.resultVector, x, y, 5, c2);
+        }
         return true;
-  } else {
-    return false;
-  }
+  } else { return false; }
 }
