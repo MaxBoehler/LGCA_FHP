@@ -26,7 +26,9 @@ void FHP_II::collision() {
 
       checkDynamicBoundary = applyBoundary(x, y);
 
-      if (checkDynamicBoundary == false) {
+      if (checkDynamicBoundary == true) {
+        field.putValue(field.resultVector, x, y, 6, field.getValue(field.fieldVector, x, y, 6));
+      } else {
         c0 = field.getValue(field.fieldVector, x, y, 0);
         c1 = field.getValue(field.fieldVector, x, y, 1);
         c2 = field.getValue(field.fieldVector, x, y, 2);
