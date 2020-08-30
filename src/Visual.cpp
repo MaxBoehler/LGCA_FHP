@@ -71,8 +71,8 @@ const void Visual::visualiseMass(std::string dt, std::string xr, std::string yr)
     for (int x = 0; x < field.getXsize(); x++) {
       outFile.write(reinterpret_cast<char*>( &(field.mass.at(y * field.getXsize() + x))  ), sizeof( field.mass.at(y * field.getXsize() + x) ));
     }
-    outFile.close();
   }
+  outFile.close();
 }
 
 const void Visual::visualiseVel(std::string dt, std::string xr, std::string yr) {
