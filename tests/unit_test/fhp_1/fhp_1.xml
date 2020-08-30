@@ -1,12 +1,12 @@
 <lgca>
   <general>
-    <x>     2048  </x>
-    <y>     2048  </y>
-    <p>     0.3   </p>
-    <tend>  10000 </tend>
-    <fhp>   1     </fhp>
-    <xMesh> 2     </xMesh>
-    <yMesh> 2     </yMesh>
+    <x>     2048   </x>
+    <y>     2048   </y>
+    <p>     0.3    </p>
+    <tend>  100000 </tend>
+    <fhp>   1      </fhp>
+    <xMesh> 2      </xMesh>
+    <yMesh> 2      </yMesh>
 
     <init>
       <x0> 768  </x0>
@@ -18,8 +18,8 @@
   </general>
 
   <measure>
-    <time> 100 </time>
-    <type> all </type>
+    <time> 1000 </time>
+    <type> all  </type>
   </measure>
 
   <obstacles>
