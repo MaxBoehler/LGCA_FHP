@@ -18,8 +18,9 @@ public:
 
   void applyBoundary();
   bool applyBoundary(int x, int y);
+  void propagate();
+  
   virtual void collision() = 0;
-  virtual void propagate() = 0;
 
 };
 

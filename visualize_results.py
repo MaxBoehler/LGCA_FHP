@@ -110,10 +110,13 @@ def visualiseMass(path, video):
     xDim = info[4]*info[0]
     ratio = (yDim) / xDim
 
+    meanMASS = []
+    timeRange = []
     for time in range(0, info[2] + info[3], info[3]):
         try:
             dataMASS = concatenateData("mass", info, filename, time)
-
+            timeRange.append(time)
+            meanMASS.append(np.mean(dataMASS))
             plt.figure(figsize=(8,8*ratio))
             plt.title("Timestep: {}; mean mass = {:.3f}".format(time, np.mean(dataMASS)))
             plt.imshow(dataMASS, vmin=0, vmax=maxVal)
@@ -122,6 +125,14 @@ def visualiseMass(path, video):
             print("Mass -> Timestep {} done!".format(time))
         except Exception:
             print("Mass -> Timestep {} ERROR! File not found".format(time))
+
+    plt.figure(figsize=(8,4))
+    plt.title("Mean mass over time")
+    plt.plot(timeRange, meanMASS)
+    plt.xlabel("time")
+    plt.ylabel("mass")
+    plt.savefig(filename + "_mean_mass.png", dpi=300, bbox_inches="tight")
+    plt.close()
 
     if video:
         generateVideo(path, "velocity.mp4", "velocity")

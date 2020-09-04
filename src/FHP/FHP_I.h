@@ -10,9 +10,7 @@ class FHP_I : public FHP {
 
 public:
   using FHP::FHP;
-
   void collision();
-  void propagate();
 
 };
 

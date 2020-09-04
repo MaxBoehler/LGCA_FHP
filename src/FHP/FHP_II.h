@@ -12,7 +12,6 @@ public:
   using FHP::FHP;
 
   void collision();
-  void propagate();
 
 };
 
