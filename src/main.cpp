@@ -90,10 +90,12 @@ int main(int argc, char *argv[]) {
   if (fhpChoice == 1) {
     if (cart_rank == 0) std::cout << "Setup FHP_I model ..." << '\n';
     fhp = std::make_unique<FHP_I>(field);
+    if (cart_rank == 0) std::cout << cells << " cells per node!" << '\n';
     if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
   } else if (fhpChoice == 2) {
     if (cart_rank == 0) std::cout << "Setup FHP_II model ..." << '\n';
     fhp = std::make_unique<FHP_II>(field);
+    if (cart_rank == 0) std::cout << cells << " cells per node!" << '\n';
     if (cart_rank == 0) std::cout << "Model ready!" << "\n\n";
   } else {
     if (cart_rank == 0) std::cout << "Wrong setup of FHP model. Please check your XML file!" << "\n\n";
