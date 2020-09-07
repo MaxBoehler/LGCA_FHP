@@ -338,8 +338,10 @@ void Field::measureField() {
         for (int cell = 0; cell < cellSize; cell++) {
           Ni = getNeighbours(x, y, cell, bit);
           coarseGrainMass += Ni;
-          coarseGrainXvel += Ni * ci[cell * 2];
-          coarseGrainYvel += Ni * ci[cell * 2 + 1];
+          if (cell < 6) {
+            coarseGrainXvel += Ni * ci[cell * 2];
+            coarseGrainYvel += Ni * ci[cell * 2 + 1];
+          }
         }
         mass.at ( yCoarse * xSize + x ) += coarseGrainMass;
 
