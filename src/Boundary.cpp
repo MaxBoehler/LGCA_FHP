@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <random>
 #include "Boundary.h"
 #include "tinyxml2.h"
 
@@ -29,8 +30,7 @@ Boundary::Boundary(Field& FIELD) : field{FIELD} {
       dirichletX1.push_back(bx1temp);
       dirichletY0.push_back(by0temp);
       dirichletY1.push_back(by1temp);
-      dirichletCell.push_back(dirichlet->FirstChildElement( "cell" )->FirstChild()->ToText()->Value());
-      dirichletValue.push_back(std::stoi(dirichlet->FirstChildElement( "value" )->FirstChild()->ToText()->Value()));
+      dirichletDensity.push_back(std::stod(dirichlet->FirstChildElement( "density" )->FirstChild()->ToText()->Value()));
       dirichletDirection.push_back(dirichlet->FirstChildElement( "direction" )->FirstChild()->ToText()->Value());
     }
   }
@@ -111,31 +111,21 @@ bool Boundary::translateCoords(int& x0temp, int& x1temp, int& y0temp, int& y1tem
 }
 
 void Boundary::applyStaticBoundary() {
-  int x0, x1, y0, y1, cell;
-  uint64_t value;
-  std::string direction, cells;
+  int x0, x1, y0, y1;
+  double density;
+  std::string direction;
+
   for (int i = 0; i < dirichletX0.size(); i++) {
     x0 = dirichletX0.at(i) / 64;
     x1 = dirichletX1.at(i) / 64;
     y0 = dirichletY0.at(i);
     y1 = dirichletY1.at(i);
-    value = uint64_t(dirichletValue.at(i));
+    density   = dirichletDensity.at(i);
     direction = dirichletDirection.at(i);
     direction.erase(std::remove_if(direction.begin(), direction.end(), isspace), direction.end());
 
-    cells = dirichletCell.at(i);
-    cells.erase(std::remove_if(cells.begin(), cells.end(), isspace), cells.end());
+    staticBoundaryType(x0, x1, y0, y1, BoundaryCondition::DIRICHLET, density, direction);
 
-    if (direction == "right") {
-      value = (value << 63);
-    }
-    else if ((direction == "top" || direction == "bottom") && value == uint64_t(1)) {
-      value = ~uint64_t(0);
-    }
-    for (int j = 0; j < cells.length(); j++) {
-      cell = (int)cells[j] - 48;
-      staticBoundaryType(x0, x1, y0, y1, BoundaryCondition::DIRICHLET, cell, value);
-    }
   }
 }
 
@@ -163,10 +153,10 @@ bool Boundary::applyDynamicBoundary(int x, int y) {
   return checkDynamic;
 }
 
-void Boundary::staticBoundaryType(int x0, int x1, int y0, int y1, BoundaryCondition bnc, int cell, uint64_t value) {
+void Boundary::staticBoundaryType(int x0, int x1, int y0, int y1, BoundaryCondition bnc, double density, std::string direction) {
   switch (bnc) {
     case BoundaryCondition::DIRICHLET:
-      dirichlet(x0, x1, y0, y1, cell, value);
+      dirichlet(x0, x1, y0, y1, density, direction);
     case BoundaryCondition::BOUNCEBACK:
       break;
     case BoundaryCondition::NONE:
@@ -190,12 +180,37 @@ bool Boundary::dynamicBoundaryType(int x, int y, int x0, int x1, int y0, int y1,
   return checkBoundary;
 }
 
-void Boundary::dirichlet(int x0, int x1, int y0, int y1, int cell, uint64_t value) {
-  uint64_t tempValue;
+void Boundary::dirichlet(int x0, int x1, int y0, int y1, double density, std::string direction) {
+  std::random_device rd;
+  std::mt19937 mt{rd()};
+  std::uniform_real_distribution<double> bitDist(0.0, 1.0);
   for (int y = y0; y <= y1; y++) {
     for (int x = x0; x <= x1; x++) {
-      tempValue = field.getValue(field.fieldVector, x, y, cell) | value;
-      field.putValue(field.fieldVector, x, y, cell, tempValue);
+      for (int cell = 0; cell < field.getCells(); cell++) {
+
+        if (direction == "right") {
+          uint64_t initBits{(field.getValue(field.fieldVector, x, y, cell) << 1) >> 1};
+          uint64_t rndBit{0};
+          rndBit = bitDist(mt) <= density ? ~uint64_t(0) : uint64_t(0);
+          initBits = initBits ^ (rndBit << 63);
+          field.putValue(field.fieldVector, x, y, cell, initBits);
+        } else if (direction == "left") {
+          uint64_t initBits{(field.getValue(field.fieldVector, x, y, cell) >> 1) << 1};
+          uint64_t rndBit{0};
+          rndBit = bitDist(mt) <= density ? ~uint64_t(0) : uint64_t(0);
+          initBits = initBits ^ (rndBit >> 63);
+          field.putValue(field.fieldVector, x, y, cell, initBits);
+        } else {
+          uint64_t initBits{0};
+          uint64_t rndBit{0};
+          for (int bit = 0; bit < 64; bit++)
+          {
+              rndBit = bitDist(mt) <= density ? uint64_t(1) : uint64_t(0);
+              initBits = rndBit ^ (initBits << 1);
+          }
+          field.putValue(field.fieldVector, x, y, cell, initBits);
+        }
+      }
     }
   }
 }
