@@ -7,7 +7,7 @@
 #include <iomanip>
 #include "Field.h"
 
-enum VisualType : int {MASS = 0, VELOCITY = 1, ALL = 2};
+enum VisualType : int {MASS = 0, MOMENTUM = 1, ALL = 2};
 
 class Visual {
 private:

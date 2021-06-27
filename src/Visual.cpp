@@ -18,7 +18,7 @@ Visual::Visual(Field& FIELD,
   if (inputType == "mass") {
     type = 0;
   }
-  else if (inputType == "velocity") {
+  else if (inputType == "momentum") {
     type = 1;
   }
   else {
@@ -53,7 +53,7 @@ const void Visual::visualise(int currentTime, int xRank, int yRank) {
       case VisualType::MASS:
         visualiseMass(ct.str(), xr.str(), yr.str());
         break;
-      case VisualType::VELOCITY:
+      case VisualType::MOMENTUM:
         visualiseVel(ct.str(), xr.str(), yr.str());
         break;
       case VisualType::ALL:
@@ -76,8 +76,8 @@ const void Visual::visualiseMass(std::string dt, std::string xr, std::string yr)
 }
 
 const void Visual::visualiseVel(std::string dt, std::string xr, std::string yr) {
-  std::ofstream outFileX(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityX", std::ios::out | std::ios::binary);
-  std::ofstream outFileY(filename + "_" + dt + "_" + xr + "_" + yr + ".velocityY", std::ios::out | std::ios::binary);
+  std::ofstream outFileX(filename + "_" + dt + "_" + xr + "_" + yr + ".x_momentum_density", std::ios::out | std::ios::binary);
+  std::ofstream outFileY(filename + "_" + dt + "_" + xr + "_" + yr + ".y_momentum_density", std::ios::out | std::ios::binary);
 
   for (int y = 0; y < field.getYsize()/64; y++) {
     for (int x = 0; x < field.getXsize(); x++) {
