@@ -1,5 +1,5 @@
 CXX      := mpic++
-CXXFLAGS := -std=c++2a
+CXXFLAGS := -std=c++20
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 BIN_DIR  := $(BUILD)/bin
