@@ -1,7 +1,7 @@
 build/
 *.png
 *.mass
-*.velocityX
-*.velocityY
+*.x_momentum_density
+*.y_momentum_density
 .DS_STORE
 *.info
