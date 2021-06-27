@@ -22,8 +22,8 @@ def readCommandLineArguments():
     type = sys.argv[2]
     video = sys.argv[3]
 
-    if type != "all" and type != "mass" and type != "velocity":
-        raise Exception("Unkown type! Use either mass, velocity or all!")
+    if type != "all" and type != "mass" and type != "momentum":
+        raise Exception("Unkown type! Use either mass, momentum or all!")
 
     if video == "yes":
         video = True
@@ -120,6 +120,7 @@ def visualiseMass(path, video):
             plt.figure(figsize=(8,8*ratio))
             plt.title("Timestep: {}; mean mass = {:.3f}".format(time, np.mean(dataMASS)))
             plt.imshow(dataMASS, vmin=0, vmax=maxVal)
+            plt.colorbar()
             plt.savefig(filename + "_mass_" + str(time) + ".png", dpi=300, bbox_inches="tight")
             plt.close()
             print("Mass -> Timestep {} done!".format(time))
@@ -127,19 +128,72 @@ def visualiseMass(path, video):
             print("Mass -> Timestep {} ERROR! File not found".format(time))
 
     plt.figure(figsize=(8,4))
-    plt.title("Mean mass over time")
+    plt.title("Mass conversation")
     plt.plot(timeRange, meanMASS)
-    plt.xlabel("time")
-    plt.ylabel("mass")
-    plt.savefig(filename + "_mean_mass.png", dpi=300, bbox_inches="tight")
+    plt.xlabel("time steps / - ")
+    plt.ylabel("mean mass / -")
+    plt.grid()
+    plt.savefig(filename + "_mass_conservation.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     if video:
-        generateVideo(path, "velocity.mp4", "velocity")
+        generateVideo(path, "mass.mp4", "mass")
         print("Video generated successfully")
         print()
 
-def visualiseVelocity(path, video):
+def visualiseMomentum(path, video):
+    for file in glob.glob(os.path.join(path, "*.xml")):
+        filename = file.replace(".xml", '')
+    info = np.fromfile(filename + ".info", np.uint32)
+
+    yDim = info[5]*info[1]/64
+    xDim = info[4]*info[0]
+
+    X, Y = np.meshgrid(np.arange(0, int(xDim)), np.arange(0, int(yDim)))
+
+    ratio = yDim / xDim
+
+    meanX = []
+    meanY = []
+    timeRange = []
+    for time in range(0, info[2] + info[3], info[3]):
+        try:
+            dataVELX = concatenateData("x_momentum_density", info, filename, time)
+            dataVELY = concatenateData("y_momentum_density", info, filename, time)
+
+            meanX.append(np.mean(dataVELX))
+            meanY.append(np.mean(dataVELY))
+            timeRange.append(time)
+
+            plt.figure(figsize=(8, 8 * ratio))
+            plt.title("Timestep: {}".format(time))
+            plt.quiver(X, Y, dataVELX, -dataVELY, scale=0.1, units='xy')
+            plt.gca().invert_yaxis()
+            plt.savefig(filename + "_momentum_" + str(time) + ".png", dpi=300, bbox_inches="tight")
+            plt.close()
+            print("Momentum density -> Timestep {} done!".format(time))
+        except Exception:
+            print("Momentum density -> Timestep {} ERROR! File not found".format(time))
+
+    plt.figure(figsize=(8,4))
+    plt.title("Momentum density conservation")
+    plt.plot(timeRange, meanX, label="x momentum")
+    plt.plot(timeRange, meanY, label="y momentum")
+    plt.grid()
+    plt.legend()
+    plt.xlabel("time steps / -")
+    plt.ylabel("mean momentum density / -")
+    plt.savefig(filename + "_momentum_conservation.png", dpi=300, bbox_inches="tight")
+    plt.close()
+
+
+    if video:
+        generateVideo(path, "momentum_density.mp4", "momentum")
+        print("Video generated successfully")
+        print()
+
+
+def visualiseMomentumMagnitude(path, video):
     for file in glob.glob(os.path.join(path, "*.xml")):
         filename = file.replace(".xml", '')
     info = np.fromfile(filename + ".info", np.uint32)
@@ -153,26 +207,32 @@ def visualiseVelocity(path, video):
 
     for time in range(0, info[2] + info[3], info[3]):
         try:
-            dataVELX = concatenateData("velocityX", info, filename, time)
-            dataVELY = concatenateData("velocityY", info, filename, time)
+            dataVELX = concatenateData("x_momentum_density", info, filename, time)
+            dataVELY = concatenateData("y_momentum_density", info, filename, time)
 
-            meanX = np.mean(dataVELX)
-            meanY = np.mean(dataVELY)
+            magnitude = np.zeros(np.shape(dataVELX))
 
-            plt.figure(figsize=(8, 8 * ratio))
-            plt.title("Timestep: {}".format(time))
-            plt.quiver(X,Y,dataVELX,-dataVELY, scale=1, units='xy')
-            plt.gca().invert_yaxis()
-            plt.savefig(filename + "_velocity_" + str(time) + ".png", dpi=300, bbox_inches="tight")
+            for i in range(np.shape(magnitude)[0]):
+                for j in range(np.shape(magnitude)[1]):
+                    magnitude[i,j] = np.sqrt(dataVELX[i,j]**2 + dataVELY[i,j]**2)
+
+            plt.figure(figsize=(8,8*ratio))
+            plt.title("Timestep: {}".format(time ))
+            plt.imshow(magnitude)
+            plt.colorbar()
+            plt.savefig(filename + "_momentumMagnitude_" + str(time) + ".png", dpi=300, bbox_inches="tight")
             plt.close()
-            print("Velocity -> Timestep {} done!".format(time))
+            print("Momentum magnitue -> Timestep {} done!".format(time))
         except Exception:
-            print("Velocity -> Timestep {} ERROR! File not found".format(time))
+            print("Momentum magnitue -> Timestep {} ERROR! File not found".format(time))
+
 
     if video:
-        generateVideo(path, "velocity.mp4", "velocity")
+        generateVideo(path, "momentum_magnitude.mp4", "momentumMagnitude")
         print("Video generated successfully")
         print()
+
+
 
 
 if __name__ == "__main__":
@@ -182,11 +242,15 @@ if __name__ == "__main__":
         print(str(e))
         sys.exit()
 
-    if type == "all":
-        visualiseVelocity(path, video=video)
-        print("")
-        visualiseMass(path, video=video)
+    if type == "momentumMagnitude":
+        visualiseMomentumMagnitude(path, video=video)
     elif type == "mass":
         visualiseMass(path, video=video)
+    elif type == "momentum":
+        visualiseMomentum(path, video=video)
     else:
-        visualiseVelocity(path, video=video)
+        visualiseMomentum(path, video=video)
+        print("")
+        visualiseMomentumMagnitude(path, video=video)
+        print("")
+        visualiseMass(path, video=video)
