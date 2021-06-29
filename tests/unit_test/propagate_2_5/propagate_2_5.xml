@@ -24,7 +24,7 @@
       <y0>        0     </y0>
       <y1>        1023  </y1>
       <cell>      2     </cell>
-      <value>     1     </value>
+      <value>     1     </density>
       <direction> right </direction>
     </dirichlet>
 
@@ -34,7 +34,7 @@
       <y0>        1024     </y0>
       <y1>        2047  </y1>
       <cell>      5     </cell>
-      <value>     1     </value>
+      <value>     1     </density>
       <direction> left </direction>
     </dirichlet>
   </staticBoundaries>
