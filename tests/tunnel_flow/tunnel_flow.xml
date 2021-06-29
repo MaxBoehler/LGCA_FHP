@@ -2,16 +2,16 @@
   <general>
     <x>     4096  </x>
     <y>     1792  </y>
-    <p>     0.3   </p>
-    <tend>  15000 </tend>
+    <p>     0.25   </p>
+    <tend>  25000 </tend>
     <fhp>   2     </fhp>
-    <xMesh> 2     </xMesh>
-    <yMesh> 2     </yMesh>
+    <xMesh> 4     </xMesh>
+    <yMesh> 4     </yMesh>
 
   </general>
 
   <measure>
-    <time> 100 </time>
+    <time> 1000 </time>
     <type> all </type>
   </measure>
 
@@ -31,8 +31,17 @@
       <x1>        0     </x1>
       <y0>        0     </y0>
       <y1>        1791  </y1>
-      <density>     1   </density>
+      <density>   0.5   </density>
       <direction> right </direction>
+    </dirichlet>
+
+    <dirichlet>
+      <x0>        4095  </x0>
+      <x1>        4095  </x1>
+      <y0>        0     </y0>
+      <y1>        1791  </y1>
+      <density>   0.25   </density>
+      <direction> left </direction>
     </dirichlet>
   </staticBoundaries>
 

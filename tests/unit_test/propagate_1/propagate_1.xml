@@ -19,13 +19,12 @@
 
   <staticBoundaries>
     <dirichlet>
-      <x0>        0     </x0>
-      <x1>        2047  </x1>
-      <y0>        2047  </y0>
-      <y1>        2047  </y1>
-      <cell>      1     </cell>
-      <value>     1     </density>
-      <direction> top </direction>
+      <x0>        0    </x0>
+      <x1>        2047 </x1>
+      <y0>        2047 </y0>
+      <y1>        2047 </y1>
+      <density>     1  </density>
+      <direction> top  </direction>
     </dirichlet>
   </staticBoundaries>
 
